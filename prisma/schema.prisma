@@ -1,0 +1,420 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ========================================
+// USER MODELS
+// ========================================
+
+model User {
+  id              String   @id @default(cuid())
+  username        String   @unique
+  email           String   @unique
+  password        String
+  firstname       String?
+  lastname        String?
+  isAuthenticated Boolean  @default(false)
+  roles           Role     @default(USER)
+  authdata        String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  bots        Bot[]
+  webProjects WebProject[]
+
+  @@map("users")
+}
+
+enum Role {
+  ADMINISTRATOR
+  USER
+  SUPER_USER
+
+  @@map("roles")
+}
+
+// ========================================
+// BOT MODELS
+// ========================================
+
+model Bot {
+  id          String   @id @default(cuid())
+  name        String
+  token       String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  userId         String
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  commands       Command[]
+  app            App?
+  autoMessages   AutoMessage[]
+  inlineKeyboard InlineKeyboard[]
+
+  @@map("bots")
+}
+
+model Command {
+  id              String   @id @default(cuid())
+  command         String
+  response        String   @db.Text
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  botId          String
+  bot            Bot              @relation(fields: [botId], references: [id], onDelete: Cascade)
+  replyKeyboards ReplyKeyboard[]
+
+  @@map("commands")
+}
+
+model App {
+  id            String          @id @default(cuid())
+  paymentToken  String?
+  paymentMethod String?
+  roundMode     BotRoundedMode  @default(ROUNDED_MD)
+  accentColor   BotColorMode    @default(BLUE)
+  shadowMode    BotShadowMode   @default(SHADOW_NONE)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  // Relations
+  botId    String   @unique
+  bot      Bot      @relation(fields: [botId], references: [id], onDelete: Cascade)
+  products Product[]
+
+  @@map("apps")
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  image       String?
+  price       String
+  currency    String   @default("USD")
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  appId String
+  app   App    @relation(fields: [appId], references: [id], onDelete: Cascade)
+
+  @@map("products")
+}
+
+model AutoMessage {
+  id       String   @id @default(cuid())
+  message  String   @db.Text
+  date     String
+  time     String
+  timeZone String   @default("UTC")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  botId          String
+  bot            Bot              @relation(fields: [botId], references: [id], onDelete: Cascade)
+  replyKeyboards ReplyKeyboard[]
+
+  @@map("auto_messages")
+}
+
+model InlineKeyboard {
+  id      String @id @default(cuid())
+  label   String
+  command String
+
+  // Relations
+  botId String
+  bot   Bot    @relation(fields: [botId], references: [id], onDelete: Cascade)
+  row   Int    @default(0) // для группировки кнопок по строкам
+
+  @@map("inline_keyboards")
+}
+
+model ReplyKeyboard {
+  id      String @id @default(cuid())
+  label   String
+  command String
+  row     Int    @default(0) // для группировки кнопок по строкам
+
+  // Relations
+  commandId     String?
+  commandRelation Command?      @relation(fields: [commandId], references: [id], onDelete: Cascade)
+  autoMessageId String?
+  autoMessage   AutoMessage?  @relation(fields: [autoMessageId], references: [id], onDelete: Cascade)
+
+  @@map("reply_keyboards")
+}
+
+// Bot Enums
+enum BotColorMode {
+  RED
+  ORANGE
+  AMBER
+  YELLOW
+  LIME
+  GREEN
+  EMERALD
+  TEAL
+  CYAN
+  SKY
+  BLUE
+  INDIGO
+  VIOLET
+  PURPLE
+  FUCHSIA
+  PINK
+  ROSE
+
+  @@map("bot_color_modes")
+}
+
+enum BotRoundedMode {
+  ROUNDED_NONE
+  ROUNDED_SM
+  ROUNDED_NORMAL
+  ROUNDED_MD
+  ROUNDED_LG
+  ROUNDED_XL
+  ROUNDED_2XL
+  ROUNDED_3XL
+  ROUNDED_FULL
+
+  @@map("bot_rounded_modes")
+}
+
+enum BotShadowMode {
+  SHADOW_NONE
+
+  @@map("bot_shadow_modes")
+}
+
+// ========================================
+// WEB PROJECT MODELS
+// ========================================
+
+model WebProject {
+  id            String            @id @default(cuid())
+  name          String
+  domain        String?
+  primaryFont   PrimaryMode       @default(Centar)
+  secondaryFont SecondaryMode     @default(Roboto)
+  generalColor  GeneralColorMode  @default(DARK)
+  accentColor   AccentColorMode   @default(BLUE)
+  textColor     TextColorMode     @default(SLATE)
+  seoTitle      String?
+  seoDescription String?          @db.Text
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  // Relations
+  userId  String
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  screens Screen[]
+
+  @@map("web_projects")
+}
+
+model Screen {
+  id       Int               @id @default(autoincrement())
+  types    ScreenType
+  variable ComponentVariable
+  order    Int               @default(0) // для сортировки секций
+
+  // Relations
+  projectId  String
+  project    WebProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  components Component[]
+
+  @@map("screens")
+}
+
+model Component {
+  id          Int           @id @default(autoincrement())
+  type        ComponentType
+  theme       String        // JSON string для хранения темы
+  items       String        @db.Text // JSON string для хранения данных
+  field       Field?
+  placeholder String?
+  array       Boolean       @default(false)
+  order       Int           @default(0) // для сортировки компонентов
+
+  // Relations
+  screenId Int
+  screen   Screen @relation(fields: [screenId], references: [id], onDelete: Cascade)
+
+  @@map("components")
+}
+
+// Web Enums
+enum PrimaryMode {
+  Centar
+  Poiret
+  Rebel
+  Songer
+  Colus
+  Gora
+  Gorod
+  Oranien
+  Vollkorn
+  Yarin
+  Aqum
+  Bemount
+  Buyan
+  Cheque
+  Furore
+  Kabrio
+  Matchup
+  Mont
+  Next
+
+  @@map("primary_modes")
+}
+
+enum SecondaryMode {
+  Roboto
+  Montserrat
+  Inter
+  Oswald
+  Lora
+  Bitter
+  Comfortaa
+  Yanone
+  Russo
+  Alternates
+  Advent
+
+  @@map("secondary_modes")
+}
+
+enum GeneralColorMode {
+  LIGHT
+  DARK
+
+  @@map("general_color_modes")
+}
+
+enum TextColorMode {
+  SLATE
+  GRAY
+  ZINC
+  NEUTRAL
+  STONE
+
+  @@map("text_color_modes")
+}
+
+enum AccentColorMode {
+  RED
+  ORANGE
+  AMBER
+  YELLOW
+  LIME
+  GREEN
+  EMERALD
+  TEAL
+  CYAN
+  SKY
+  BLUE
+  INDIGO
+  VIOLET
+  PURPLE
+  FUCHSIA
+  PINK
+  ROSE
+
+  @@map("accent_color_modes")
+}
+
+enum ScreenType {
+  ACTION
+  BLOG
+  COLLECTION
+  CONTENT
+  FEATURE
+  FAQ
+  GALLERY
+  TESTIMONIAL
+  FOOTER
+  HEADER
+  FORM
+  HERO
+  NOTFOUND
+  PRICING
+  STATS
+
+  @@map("screen_types")
+}
+
+enum ComponentVariable {
+  V1
+  V2
+  V3
+  V4
+  V5
+  V6
+  V7
+  V8
+
+  @@map("component_variables")
+}
+
+enum ComponentType {
+  CARD
+  FAQLIST
+  IMAGE
+  INPUT
+  LINK
+  HEADING
+  CHECK
+  TYPOGRAPHY
+  BLOCKQUOTE
+  BLOCKNAMING
+  TITLE
+  PARAGRAPH
+  SVG
+
+  @@map("component_types")
+}
+
+enum Field {
+  PARAGRAPH
+  QUOTE
+  TITLE
+  BLOCKNAME
+  HEADLINK
+  DESCRIPTION
+  READLINK
+  HEAD
+  ROW1
+  ROW2
+  NAME
+  TEXT
+  BODY
+  CHECK
+  HEADING
+  CHECKLIST
+  CHECKHEAD
+  BLOCKQUOTE
+  PARAGRAPHLIST
+  DATES
+  LABEL
+
+  @@map("fields")
+}
