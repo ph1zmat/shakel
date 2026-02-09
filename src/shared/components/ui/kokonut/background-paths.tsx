@@ -93,11 +93,7 @@ interface FloatingPathsProps {
 // Memoized FloatingPaths component
 const FloatingPaths = memo(function FloatingPaths({
   position,
-  colors = [
-    'rgb(147, 51, 234)',
-    'rgb(236, 72, 153)',
-    'rgb(59, 130, 246)',
-  ],
+  colors = ['rgb(147, 51, 234)', 'rgb(236, 72, 153)', 'rgb(59, 130, 246)'],
 }: FloatingPathsProps) {
   const gradientId = useMemo(() => generateUniqueId('gradient'), []);
 
@@ -166,8 +162,10 @@ const FloatingPaths = memo(function FloatingPaths({
               const offset = (index / (colors.length - 1)) * 100;
               return (
                 <stop
-                  key={`index-${// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-index}`}
+                  key={`index-${
+                    // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+                    index
+                  }`}
                   offset={`${offset}%`}
                   stopColor={color}
                   stopOpacity="0.5"
@@ -274,7 +272,7 @@ export default memo(function BackgroundPaths({
       <div className="absolute inset-0">
         <FloatingPaths position={1} colors={colors} />
       </div>
-      <div className="container mx-auto p-8 pt-24 z-10">{children}</div>
+      <div className="relative z-10">{children}</div>
     </div>
   );
 });

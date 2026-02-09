@@ -44,7 +44,7 @@ export function BeamMultiple({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        'relative flex h-[500px] w-full items-center justify-center overflow-hidden p-10',
+        'relative flex h-[500px] w-full items-center justify-center p-10',
         className,
       )}
       ref={containerRef}

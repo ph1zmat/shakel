@@ -1,10 +1,27 @@
-import { Hero } from '@/features/landing';
-import BackgroundPaths from '@/shared/components/ui/kokonut/background-paths';
+import {
+	Hero,
+	LogoCloud,
+	Showcase,
+	BentoFeatures,
+	CodeShowcase,
+	HowItWorks,
+	Features,
+	Testimonials,
+	CTA,
+} from '@/features/landing'
 
 export default function HomePage() {
-  return (
-    <BackgroundPaths colors={['#3b82f6', '#2dd4bf', '#72e3ad']}>
-      <Hero />
-    </BackgroundPaths>
-  );
+	return (
+		<main className='min-h-screen'>
+			<Hero />
+			<LogoCloud />
+			<Showcase />
+			<BentoFeatures />
+			<CodeShowcase />
+			<HowItWorks />
+			<Features />
+			<Testimonials />
+			<CTA />
+		</main>
+	)
 }

@@ -1,3 +1,12 @@
 export { BeamMultiple } from './components/beam';
+export { BentoFeatures } from './components/bento-features';
+export { CodeShowcase } from './components/code-showcase';
+export { CTA } from './components/cta';
+export { Features } from './components/features';
+export { Footer } from './components/footer';
 export { Header } from './components/header';
 export { Hero } from './components/hero';
+export { HowItWorks } from './components/how-it-works';
+export { LogoCloud } from './components/logo-cloud';
+export { Showcase } from './components/showcase';
+export { Testimonials } from './components/testimonials';
