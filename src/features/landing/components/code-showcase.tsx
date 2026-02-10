@@ -13,8 +13,8 @@ import {
   Cpu,
   Code2
 } from 'lucide-react';
-import { cn } from '@/shared/lib/utils';
-import { ContentPageBackground } from '@/shared/components/ui/backgrounds';
+import { cn } from '@/lib/utils';
+import { ContentPageBackground } from '@/components/ui/backgrounds';
 
 const codeSnippets = [
   {

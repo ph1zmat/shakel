@@ -1,0 +1,36 @@
+import { googleFormTriggerExecutor } from '@/fetures/triggers/components/google-form-trigger/executor';
+import { manualTriggerExecutor } from '@/fetures/triggers/components/manual-trigger/executor';
+import { stripeTriggerExecutor } from '@/fetures/triggers/components/stripe-trigger/executor';
+import { NodeType } from '@/generated/prisma/enums';
+import { deepseekExecutor } from '../components/deepseek/executor';
+import { discordExecutor } from '../components/discord/executor';
+import { geminiExecutor } from '../components/gemeni/executor';
+import { httpRequestExecutor } from '../components/http-request/executor';
+import { mistralExecutor } from '../components/mistral/executor';
+import { ollamaExecutor } from '../components/ollama/executor';
+import { slackExecutor } from '../components/slack/executor';
+import type { NodeExecutor } from '../types';
+
+export const executorRegistry: Record<NodeType, NodeExecutor> = {
+  [NodeType.MANUAL_TRIGGER]: manualTriggerExecutor,
+  [NodeType.INITIAL]: manualTriggerExecutor,
+  [NodeType.HTTP_REQUEST]: httpRequestExecutor,
+  [NodeType.GOOGLE_FORM_TRIGGER]: googleFormTriggerExecutor,
+  [NodeType.STRIPE_TRIGGER]: stripeTriggerExecutor,
+  [NodeType.GEMINI]: geminiExecutor,
+  [NodeType.DEEPSEEK]: deepseekExecutor,
+  [NodeType.MISTRAL]: mistralExecutor,
+  [NodeType.OLLAMA]: ollamaExecutor,
+  [NodeType.ANTHROPIC]: geminiExecutor,
+  [NodeType.OPENAI]: geminiExecutor,
+  [NodeType.DISCORD]: discordExecutor,
+  [NodeType.SLACK]: slackExecutor,
+};
+
+export const getExecutor = (type: NodeType): NodeExecutor => {
+  const executor = executorRegistry[type];
+  if (!executor) {
+    throw new Error(`No executor found for node type: ${type}`);
+  }
+  return executor;
+};

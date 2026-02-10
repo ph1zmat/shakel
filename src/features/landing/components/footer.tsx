@@ -3,7 +3,7 @@
 import { Github, Twitter, MessageCircle, Mail } from 'lucide-react'
 import Image from 'next/image'
 import Logo from '../../../../public/gochi-logo.png'
-import { FooterBackground } from '@/shared/components/ui/backgrounds'
+import { FooterBackground } from '@/components/ui/backgrounds'
 
 const footerLinks = {
 	product: {

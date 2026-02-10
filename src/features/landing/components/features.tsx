@@ -15,8 +15,8 @@ import {
   Share2,
   History
 } from 'lucide-react';
-import { cn } from '@/shared/lib/utils';
-import { FeaturesBackground } from '@/shared/components/ui/backgrounds';
+import { cn } from '@/lib/utils';
+import { FeaturesBackground } from '@/components/ui/backgrounds';
 
 const featureGroups = [
   {

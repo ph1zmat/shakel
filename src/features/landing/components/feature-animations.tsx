@@ -37,7 +37,7 @@ import {
   Braces,
   Webhook
 } from 'lucide-react';
-import { cn } from '@/shared/lib/utils';
+import { cn } from '@/lib/utils';
 
 // 1. Builder - Real drag and drop interface
 export function BuilderAnimation({ color }: { color: string }) {

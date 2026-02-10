@@ -19,8 +19,8 @@ import {
   ChevronRight,
   Star
 } from 'lucide-react';
-import { cn } from '@/shared/lib/utils';
-import { ContentPageBackground } from '@/shared/components/ui/backgrounds';
+import { cn } from '@/lib/utils';
+import { ContentPageBackground } from '@/components/ui/backgrounds';
 
 const categories = [
   {

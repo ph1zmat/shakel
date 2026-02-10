@@ -17,9 +17,9 @@ import {
   MessageCircle,
   Linkedin
 } from 'lucide-react';
-import { Button } from '@/shared/components/ui/button';
-import { cn } from '@/shared/lib/utils';
-import { ContentPageBackground, FooterBackground } from '@/shared/components/ui/backgrounds';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { ContentPageBackground, FooterBackground } from '@/components/ui/backgrounds';
 
 const contactMethods = [
   {

@@ -3,7 +3,7 @@
 import { motion } from 'motion/react';
 import { Quote, Star, TrendingUp, Building2, Globe2, Award } from 'lucide-react';
 import Image from 'next/image';
-import { TestimonialsBackground } from '@/shared/components/ui/backgrounds';
+import { TestimonialsBackground } from '@/components/ui/backgrounds';
 
 const testimonials = [
   {

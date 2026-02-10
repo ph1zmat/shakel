@@ -1,9 +1,9 @@
 'use client'
 
 import { motion } from 'motion/react'
-import { Button } from '@/shared/components/ui/button'
+import { Button } from '@/components/ui/button'
 import { ArrowRight, Play } from 'lucide-react'
-import { HeroBackground } from '@/shared/components/ui/backgrounds'
+import { HeroBackground } from '@/components/ui/backgrounds'
 
 // Smooth easing curves from Linear/Vercel
 const EASE_OUT_EXPO: [number, number, number, number] = [0.16, 1, 0.3, 1]
@@ -58,7 +58,7 @@ const ProductMockup = () => {
 										{item}
 									</motion.div>
 								),
-								)}
+							)}
 						</div>
 					</div>
 

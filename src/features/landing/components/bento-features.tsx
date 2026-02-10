@@ -14,7 +14,7 @@ import {
   Cpu,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { cn } from '@/shared/lib/utils';
+import { cn } from '@/lib/utils';
 import {
   BuilderAnimation,
   WorkflowAnimation,
@@ -25,7 +25,7 @@ import {
   SecurityAnimation,
   CollaborationAnimation,
 } from './feature-animations';
-import { FeaturesBackground } from '@/shared/components/ui/backgrounds';
+import { FeaturesBackground } from '@/components/ui/backgrounds';
 
 const EASE_OUT_EXPO: [number, number, number, number] = [0.16, 1, 0.3, 1];
 

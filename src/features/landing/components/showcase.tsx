@@ -14,9 +14,9 @@ import {
   ChevronRight,
   Layers
 } from 'lucide-react';
-import { cn } from '@/shared/lib/utils';
+import { cn } from '@/lib/utils';
 import Image from 'next/image';
-import { ContentPageBackground } from '@/shared/components/ui/backgrounds';
+import { ContentPageBackground } from '@/components/ui/backgrounds';
 
 const projects = [
   {

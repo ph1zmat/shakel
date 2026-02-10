@@ -1,8 +1,6 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// ========================================
+// VISUAL BUILDER PLATFORM v2.0
+// ========================================
 
 generator client {
   provider = "prisma-client"
@@ -14,407 +12,589 @@ datasource db {
 }
 
 // ========================================
-// USER MODELS
+// CORE: User & Auth (без изменений)
 // ========================================
 
 model User {
-  id              String   @id @default(cuid())
-  username        String   @unique
-  email           String   @unique
-  password        String
-  firstname       String?
-  lastname        String?
-  isAuthenticated Boolean  @default(false)
-  roles           Role     @default(USER)
-  authdata        String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id            String       @id @default(cuid())
+  name          String
+  email         String
+  emailVerified Boolean      @default(false)
+  image         String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @default(now()) @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+  workflows     Workflow[]
+  projects      Project[] // Заменили webProjects + bots
+  credentials   Credential[]
 
-  // Relations
-  bots        Bot[]
-  webProjects WebProject[]
-
-  @@map("users")
+  @@unique([email])
+  @@map("user")
 }
 
-enum Role {
-  ADMINISTRATOR
-  USER
-  SUPER_USER
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("roles")
+  @@unique([token])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+
+  @@map("verification")
+}
+
+model Credential {
+  id        String         @id @default(cuid())
+  name      String
+  value     String
+  type      CredentialType
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @default(now()) @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Node   Node[]
+
+  @@map("credential")
+}
+
+enum CredentialType {
+  OPENAI
+  ANTHROPIC
+  GEMINI
+  DEEPSEEK
+  MISTRAL
+  OLLAMA
+
+  @@map("credential_type")
 }
 
 // ========================================
-// BOT MODELS
+// CORE: Workflows (расширенная версия)
 // ========================================
 
-model Bot {
-  id          String   @id @default(cuid())
-  name        String
-  token       String   @unique
-  description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+model Workflow {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
-  // Relations
-  userId         String
-  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  commands       Command[]
-  app            App?
-  autoMessages   AutoMessage[]
-  inlineKeyboard InlineKeyboard[]
+  nodes       Node[]
+  connections Connection[]
+  executions  Execution[]
 
-  @@map("bots")
+  // Связь с проектом (опциональная)
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  // Interactions которые триггерят этот workflow
+  interactions Interaction[]
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("workflow")
 }
 
-model Command {
-  id              String   @id @default(cuid())
-  command         String
-  response        String   @db.Text
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+enum NodeType {
+  INITIAL
+  MANUAL_TRIGGER
+  HTTP_REQUEST
+  GOOGLE_FORM_TRIGGER
+  STRIPE_TRIGGER
+  ANTHROPIC
+  GEMINI
+  DEEPSEEK
+  MISTRAL
+  OLLAMA
+  OPENAI
+  DISCORD
+  SLACK
 
-  // Relations
-  botId          String
-  bot            Bot              @relation(fields: [botId], references: [id], onDelete: Cascade)
-  replyKeyboards ReplyKeyboard[]
-
-  @@map("commands")
+  @@map("node_type")
 }
 
-model App {
-  id            String          @id @default(cuid())
-  paymentToken  String?
-  paymentMethod String?
-  roundMode     BotRoundedMode  @default(ROUNDED_MD)
-  accentColor   BotColorMode    @default(BLUE)
-  shadowMode    BotShadowMode   @default(SHADOW_NONE)
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
+model Node {
+  id         String   @id @default(cuid())
+  workflowId String
+  workflow   Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
 
-  // Relations
-  botId    String   @unique
-  bot      Bot      @relation(fields: [botId], references: [id], onDelete: Cascade)
-  products Product[]
+  name     String
+  type     NodeType
+  position Json
+  data     Json     @default("{}")
 
-  @@map("apps")
-}
+  credentialId String?
+  credential   Credential? @relation(fields: [credentialId], references: [id], onDelete: SetNull)
 
-model Product {
-  id          String   @id @default(cuid())
-  image       String?
-  price       String
-  currency    String   @default("USD")
-  description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  outputConnections Connection[] @relation("FromNode")
+  inputConnections  Connection[] @relation("ToNode")
 
-  // Relations
-  appId String
-  app   App    @relation(fields: [appId], references: [id], onDelete: Cascade)
-
-  @@map("products")
-}
-
-model AutoMessage {
-  id       String   @id @default(cuid())
-  message  String   @db.Text
-  date     String
-  time     String
-  timeZone String   @default("UTC")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Relations
-  botId          String
-  bot            Bot              @relation(fields: [botId], references: [id], onDelete: Cascade)
-  replyKeyboards ReplyKeyboard[]
-
-  @@map("auto_messages")
+  @@map("node")
 }
 
-model InlineKeyboard {
-  id      String @id @default(cuid())
-  label   String
-  command String
+model Connection {
+  id         String   @id @default(cuid())
+  workflowId String
+  workflow   Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
 
-  // Relations
-  botId String
-  bot   Bot    @relation(fields: [botId], references: [id], onDelete: Cascade)
-  row   Int    @default(0) // для группировки кнопок по строкам
+  fromNodeId String
+  fromNode   Node   @relation("FromNode", fields: [fromNodeId], references: [id], onDelete: Cascade)
+  toNodeId   String
+  toNode     Node   @relation("ToNode", fields: [toNodeId], references: [id], onDelete: Cascade)
+  fromOutput String @default("main")
+  toInput    String @default("main")
 
-  @@map("inline_keyboards")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([fromNodeId, toNodeId, fromOutput, toInput])
+  @@map("connection")
 }
 
-model ReplyKeyboard {
-  id      String @id @default(cuid())
-  label   String
-  command String
-  row     Int    @default(0) // для группировки кнопок по строкам
+enum ExecutionStatus {
+  RUNNING
+  SUCCESS
+  FAILED
 
-  // Relations
-  commandId     String?
-  commandRelation Command?      @relation(fields: [commandId], references: [id], onDelete: Cascade)
-  autoMessageId String?
-  autoMessage   AutoMessage?  @relation(fields: [autoMessageId], references: [id], onDelete: Cascade)
-
-  @@map("reply_keyboards")
+  @@map("execution_status")
 }
 
-// Bot Enums
-enum BotColorMode {
-  RED
-  ORANGE
-  AMBER
-  YELLOW
-  LIME
-  GREEN
-  EMERALD
-  TEAL
-  CYAN
-  SKY
-  BLUE
-  INDIGO
-  VIOLET
-  PURPLE
-  FUCHSIA
-  PINK
-  ROSE
+model Execution {
+  id String @id @default(cuid())
 
-  @@map("bot_color_modes")
-}
+  workflowId String
+  workflow   Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
 
-enum BotRoundedMode {
-  ROUNDED_NONE
-  ROUNDED_SM
-  ROUNDED_NORMAL
-  ROUNDED_MD
-  ROUNDED_LG
-  ROUNDED_XL
-  ROUNDED_2XL
-  ROUNDED_3XL
-  ROUNDED_FULL
+  status     ExecutionStatus @default(RUNNING)
+  error      String?         @db.Text
+  errorStack String?         @db.Text
 
-  @@map("bot_rounded_modes")
-}
+  startedAt   DateTime  @default(now())
+  completedAt DateTime?
 
-enum BotShadowMode {
-  SHADOW_NONE
+  inngestEventId String @unique()
 
-  @@map("bot_shadow_modes")
+  output Json?
+
+  @@map("execution")
 }
 
 // ========================================
-// WEB PROJECT MODELS
+// Design System (гибкая темизация)
 // ========================================
 
-model WebProject {
-  id            String            @id @default(cuid())
-  name          String
-  domain        String?
-  primaryFont   PrimaryMode       @default(Centar)
-  secondaryFont SecondaryMode     @default(Roboto)
-  generalColor  GeneralColorMode  @default(DARK)
-  accentColor   AccentColorMode   @default(BLUE)
-  textColor     TextColorMode     @default(SLATE)
-  seoTitle      String?
-  seoDescription String?          @db.Text
-  createdAt     DateTime          @default(now())
-  updatedAt     DateTime          @updatedAt
+model DesignSystem {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  // Relations
-  userId  String
-  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  screens Screen[]
+  // Tokens
+  colors     ColorToken[]
+  spacing    SpacingToken[]
+  typography TypographyToken[]
+  effects    EffectToken[]
 
-  @@map("web_projects")
+  // Связанные проекты
+  projects Project[]
+
+  @@map("design_system")
 }
 
-model Screen {
-  id       Int               @id @default(autoincrement())
-  types    ScreenType
-  variable ComponentVariable
-  order    Int               @default(0) // для сортировки секций
+model ColorToken {
+  id   String @id @default(cuid())
+  name String // "primary", "background", "danger"
 
-  // Relations
-  projectId  String
-  project    WebProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  components Component[]
+  // HSL representation для гибкости
+  hue        Int   @default(0) // 0-360
+  saturation Int   @default(0) // 0-100
+  lightness  Int   @default(0) // 0-100
+  alpha      Float @default(1) // 0-1
 
-  @@map("screens")
+  // Semantic mapping
+  isSemantic   Boolean @default(false)
+  semanticRole String? // "background", "foreground", "accent", "muted"
+
+  designSystemId String
+  designSystem   DesignSystem @relation(fields: [designSystemId], references: [id], onDelete: Cascade)
+
+  @@unique([designSystemId, name])
+  @@map("color_token")
 }
 
-model Component {
-  id          Int           @id @default(autoincrement())
-  type        ComponentType
-  theme       String        // JSON string для хранения темы
-  items       String        @db.Text // JSON string для хранения данных
-  field       Field?
-  placeholder String?
-  array       Boolean       @default(false)
-  order       Int           @default(0) // для сортировки компонентов
+model SpacingToken {
+  id    String @id @default(cuid())
+  name  String // "xs", "sm", "md", "lg", "xl"
+  value Float // rem (0.25, 0.5, 1, 1.5, 2)
 
-  // Relations
-  screenId Int
-  screen   Screen @relation(fields: [screenId], references: [id], onDelete: Cascade)
+  designSystemId String
+  designSystem   DesignSystem @relation(fields: [designSystemId], references: [id], onDelete: Cascade)
 
-  @@map("components")
+  @@unique([designSystemId, name])
+  @@map("spacing_token")
 }
 
-// Web Enums
-enum PrimaryMode {
-  Centar
-  Poiret
-  Rebel
-  Songer
-  Colus
-  Gora
-  Gorod
-  Oranien
-  Vollkorn
-  Yarin
-  Aqum
-  Bemount
-  Buyan
-  Cheque
-  Furore
-  Kabrio
-  Matchup
-  Mont
-  Next
+model TypographyToken {
+  id   String @id @default(cuid())
+  name String // "heading", "body", "mono"
 
-  @@map("primary_modes")
+  family   String
+  weights  Int[] // [400, 500, 700]
+  fallback String @default("system-ui, sans-serif")
+
+  // Fluid typography
+  minSize    Float // rem
+  maxSize    Float // rem
+  lineHeight Float
+
+  designSystemId String
+  designSystem   DesignSystem @relation(fields: [designSystemId], references: [id], onDelete: Cascade)
+
+  @@unique([designSystemId, name])
+  @@map("typography_token")
 }
 
-enum SecondaryMode {
-  Roboto
-  Montserrat
-  Inter
-  Oswald
-  Lora
-  Bitter
-  Comfortaa
-  Yanone
-  Russo
-  Alternates
-  Advent
+model EffectToken {
+  id     String     @id @default(cuid())
+  name   String // "shadow-sm", "glow-primary"
+  type   EffectType
+  params Json // { x: 0, y: 4, blur: 12, color: "hsla(...)" }
 
-  @@map("secondary_modes")
+  designSystemId String
+  designSystem   DesignSystem @relation(fields: [designSystemId], references: [id], onDelete: Cascade)
+
+  @@unique([designSystemId, name])
+  @@map("effect_token")
 }
 
-enum GeneralColorMode {
-  LIGHT
-  DARK
+enum EffectType {
+  SHADOW
+  BLUR
+  GLOW
+  BORDER
 
-  @@map("general_color_modes")
+  @@map("effect_type")
 }
 
-enum TextColorMode {
-  SLATE
-  GRAY
-  ZINC
-  NEUTRAL
-  STONE
+// ========================================
+// Projects (унификация Web + Bot)
+// ========================================
 
-  @@map("text_color_modes")
+enum Platform {
+  WEB
+  TELEGRAM_BOT
+  MOBILE_APP
+
+  @@map("platform")
 }
 
-enum AccentColorMode {
-  RED
-  ORANGE
-  AMBER
-  YELLOW
-  LIME
-  GREEN
-  EMERALD
-  TEAL
-  CYAN
-  SKY
-  BLUE
-  INDIGO
-  VIOLET
-  PURPLE
-  FUCHSIA
-  PINK
-  ROSE
+enum PublishStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
 
-  @@map("accent_color_modes")
+  @@map("publish_status")
 }
 
-enum ScreenType {
-  ACTION
-  BLOG
-  COLLECTION
-  CONTENT
-  FEATURE
-  FAQ
-  GALLERY
-  TESTIMONIAL
-  FOOTER
-  HEADER
-  FORM
-  HERO
-  NOTFOUND
-  PRICING
-  STATS
+model Project {
+  id        String        @id @default(cuid())
+  name      String
+  platform  Platform
+  status    PublishStatus @default(DRAFT)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
 
-  @@map("screen_types")
+  // Design
+  designSystemId String
+  designSystem   DesignSystem @relation(fields: [designSystemId], references: [id])
+
+  // Structure
+  pages     Page[]
+  workflows Workflow[]
+
+  // Code Generation
+  codeArtifacts CodeArtifact[]
+
+  // Platform-specific config
+  webConfig WebProjectConfig?
+  botConfig BotProjectConfig?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("project")
 }
 
-enum ComponentVariable {
-  V1
-  V2
-  V3
-  V4
-  V5
-  V6
-  V7
-  V8
+// Platform-specific configs
+model WebProjectConfig {
+  id        String  @id @default(cuid())
+  projectId String  @unique
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
-  @@map("component_variables")
+  domain         String?
+  seoTitle       String?
+  seoDescription String? @db.Text
+  favicon        String?
+
+  // Next.js specific
+  basePath String @default("/")
+
+  @@map("web_project_config")
 }
 
-enum ComponentType {
-  CARD
-  FAQLIST
-  IMAGE
-  INPUT
-  LINK
-  HEADING
-  CHECK
+model BotProjectConfig {
+  id        String  @id @default(cuid())
+  projectId String  @unique
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  // Telegram Bot API
+  token      String? @unique
+  webhookUrl String?
+
+  // Bot behavior
+  parseMode             String  @default("HTML") // HTML, MarkdownV2
+  disableWebPagePreview Boolean @default(false)
+
+  @@map("bot_project_config")
+}
+
+// ========================================
+// Pages (структура сайта/бота)
+// ========================================
+
+enum ViewportMode {
+  DESKTOP
+  TABLET
+  MOBILE
+  BOT_CHAT
+
+  @@map("viewport_mode")
+}
+
+model Page {
+  id      String  @id @default(cuid())
+  name    String // "Home", "About", "Start"
+  slug    String // "/", "about", "start"
+  isEntry Boolean @default(false) // Entry point
+  order   Int     @default(0) // Для сортировки
+
+  // Canvas настройки
+  viewport   ViewportMode @default(DESKTOP)
+  background Json? // { type: "color"|"gradient"|"image", value: "..." }
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  // Component Tree
+  nodes ComponentNode[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([projectId, slug])
+  @@map("page")
+}
+
+// ========================================
+// Component Tree (Visual Builder Core)
+// ========================================
+
+model ComponentNode {
+  id String @id @default(cuid())
+
+  // Hierarchy (Adjacency List)
+  parentId String?
+  parent   ComponentNode?  @relation("NodeChildren", fields: [parentId], references: [id])
+  children ComponentNode[] @relation("NodeChildren")
+
+  pageId String
+  page   Page   @relation(fields: [pageId], references: [id], onDelete: Cascade)
+
+  // Component Definition
+  type    String @default("container") // "button", "text", "container", "image"
+  library String @default("built-in") // "built-in", "shadcn", "custom"
+
+  // Properties (JSON Schema based)
+  props  Json @default("{}") // { text: "Click me", variant: "solid" }
+  styles Json @default("{}") // { base: { padding: {...} }, hover: {...} }
+
+  // Ordering для drag-drop
+  order Int @default(0)
+
+  // Interactions (события)
+  interactions Interaction[]
+
+  // Style bindings (ссылки на Design Tokens)
+  styleBindings StyleBinding[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([pageId, parentId, order])
+  @@map("component_node")
+}
+
+model StyleBinding {
+  id String @id @default(cuid())
+
+  nodeId String
+  node   ComponentNode @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+
+  property   String // "backgroundColor", "fontSize", "padding"
+  tokenType  TokenType
+  tokenName  String // "primary", "md", "heading"
+  isVariable Boolean   @default(true) // true = CSS var, false = static
+
+  @@unique([nodeId, property])
+  @@map("style_binding")
+}
+
+enum TokenType {
+  COLOR
+  SPACING
   TYPOGRAPHY
-  BLOCKQUOTE
-  BLOCKNAMING
-  TITLE
-  PARAGRAPH
-  SVG
+  EFFECT
+  CUSTOM
 
-  @@map("component_types")
+  @@map("token_type")
 }
 
-enum Field {
-  PARAGRAPH
-  QUOTE
-  TITLE
-  BLOCKNAME
-  HEADLINK
-  DESCRIPTION
-  READLINK
-  HEAD
-  ROW1
-  ROW2
-  NAME
-  TEXT
-  BODY
-  CHECK
-  HEADING
-  CHECKLIST
-  CHECKHEAD
-  BLOCKQUOTE
-  PARAGRAPHLIST
-  DATES
-  LABEL
+// ========================================
+// Interactions (автоматизации + логика)
+// ========================================
 
-  @@map("fields")
+enum InteractionType {
+  // Базовая логика (client-side)
+  NAVIGATE
+  OPEN_MODAL
+  CLOSE_MODAL
+  SCROLL_TO
+  SHOW_FORM
+  HIDE_FORM
+  SET_STATE
+  TOGGLE_VISIBILITY
+
+  // Workflow автоматизации
+  TRIGGER_WORKFLOW
+
+  // Bot-specific
+  SEND_MESSAGE
+  EDIT_MESSAGE
+  SHOW_KEYBOARD
+  HIDE_KEYBOARD
+
+  @@map("interaction_type")
+}
+
+model Interaction {
+  id String @id @default(cuid())
+
+  nodeId String
+  node   ComponentNode @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+
+  // Trigger: onClick, onSubmit, onHover, onMount, onMessage (bot)
+  trigger String @default("onClick")
+
+  type InteractionType
+
+  // Конфигурация действия (type-specific)
+  config Json @default("{}")
+  // NAVIGATE: { url: "/about", newTab: false }
+  // TRIGGER_WORKFLOW: { workflowId: "...", inputMapping: {...} }
+  // SEND_MESSAGE: { text: "Hello {{user.name}}" }
+
+  // Привязка к Workflow
+  workflowId String?
+  workflow   Workflow? @relation(fields: [workflowId], references: [id])
+
+  // Execution
+  debounceMs  Int     @default(0)
+  showLoading Boolean @default(false)
+  condition   String? // JS expression для conditional execution
+
+  order Int @default(0) // Priority для chained actions
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([nodeId, trigger])
+  @@map("interaction")
+}
+
+// ========================================
+// Code Artifacts (генерированный код)
+// ========================================
+
+enum ArtifactType {
+  NEXTJS_PAGE
+  NEXTJS_LAYOUT
+  NEXTJS_COMPONENT
+  REACT_COMPONENT
+  CSS_STYLESHEET
+  TAILWIND_CONFIG
+  NESTJS_HANDLER
+  NESTJS_MODULE
+  NESTJS_SERVICE
+  PACKAGE_JSON
+  DOCKERFILE
+
+  @@map("artifact_type")
+}
+
+model CodeArtifact {
+  id       String       @id @default(cuid())
+  type     ArtifactType
+  filePath String // "app/page.tsx", "src/bot/handlers/start.ts"
+  content  String       @db.Text
+
+  // Для incremental builds
+  contentHash String
+  dependsOn   String[] // ["design-system", "page:home"]
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  generatedAt DateTime @default(now())
+
+  @@unique([projectId, filePath])
+  @@map("code_artifact")
 }

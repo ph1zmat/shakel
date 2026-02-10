@@ -16,8 +16,8 @@ import {
   Share2,
   Globe
 } from 'lucide-react';
-import { cn } from '@/shared/lib/utils';
-import { HowItWorksBackground } from '@/shared/components/ui/backgrounds';
+import { cn } from '@/lib/utils';
+import { HowItWorksBackground } from '@/components/ui/backgrounds';
 
 const steps = [
   {

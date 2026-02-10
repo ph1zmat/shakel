@@ -1,10 +1,10 @@
-import { Button } from '@/shared/components/ui/button';
+import { Button } from '@/components/ui/button';
 // Импортируйте нужную анимацию:
-// import { NeuralNetwork } from '@/shared/components/ui/hero-animations';
-// import { FloatingCards } from '@/shared/components/ui/hero-animations';
-// import { PulseGlow } from '@/shared/components/ui/hero-animations';
-// import { DynamicRays } from '@/shared/components/ui/hero-animations';
-import { MorphingShapes } from '@/shared/components/ui/hero-animations';
+// import { NeuralNetwork } from '@/components/ui/hero-animations';
+// import { FloatingCards } from '@/components/ui/hero-animations';
+// import { PulseGlow } from '@/components/ui/hero-animations';
+// import { DynamicRays } from '@/components/ui/hero-animations';
+import { MorphingShapes } from '@/components/ui/hero-animations';
 
 export const Hero = () => {
   return (

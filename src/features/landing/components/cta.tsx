@@ -1,9 +1,9 @@
 'use client';
 
 import { motion } from 'motion/react';
-import { Button } from '@/shared/components/ui/button';
+import { Button } from '@/components/ui/button';
 import { ArrowRight, Sparkles } from 'lucide-react';
-import { CTABackground } from '@/shared/components/ui/backgrounds';
+import { CTABackground } from '@/components/ui/backgrounds';
 
 export function CTA() {
   return (

@@ -44,3 +44,5 @@ next-env.d.ts
 
 #readme
 ARCHITECTURE.md
+MIGRATION_PLAN.md
+MIGRATION_EXECUTION_PLAN.md

@@ -9,8 +9,8 @@ import {
 import { BotIcon, UserIcon } from 'lucide-react';
 import type React from 'react';
 import { forwardRef, useRef } from 'react';
-import { AnimatedBeam } from '@/shared/components/ui/magic/animated-beam';
-import { cn } from '@/shared/lib/utils';
+import { AnimatedBeam } from '@/components/ui/magic/animated-beam';
+import { cn } from '@/lib/utils';
 
 const Circle = forwardRef<
   HTMLDivElement,

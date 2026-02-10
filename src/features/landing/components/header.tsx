@@ -9,8 +9,8 @@ import {
 	Navbar,
 	NavbarLogo,
 	NavItems,
-} from '@/shared/components/ui/acernity/resizable-navbar'
-import { Button } from '@/shared/components/ui/button'
+} from '@/components/ui/acernity/resizable-navbar'
+import { Button } from '@/components/ui/button'
 
 export function Header({ children }: { children: React.ReactNode }) {
 	const navItems = [
