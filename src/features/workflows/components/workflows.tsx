@@ -106,7 +106,6 @@ export const WorkflowContainer = ({
     <EntityContainer
       header={<WorkflowHeader />}
       search={<WorkflowsSearch />}
-      pagination={<WorkflowsPagination />}
     >
       {children}
     </EntityContainer>

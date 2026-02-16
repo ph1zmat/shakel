@@ -9,8 +9,8 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
 					href={'/'}
 					className='w-full flex items-center justify-center gap-2 font-medium'
 				>
-					<Image src='/logos/logo.svg' alt='Logo' width={30} height={30} />
-					NodeBase
+				<Image src='/logo-white-circle-color.png' alt='Logo' width={30} height={30} />
+				Shakel
 				</Link>
 				{children}
 			</div>

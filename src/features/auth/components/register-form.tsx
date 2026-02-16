@@ -56,13 +56,14 @@ export function RegisterForm() {
 		await authClient.signIn.social(
 			{
 				provider: 'github',
+				callbackURL: '/projects',
 			},
 			{
 				onSuccess: () => {
-					router.push('/')
+					router.push('/projects')
 				},
 				onError: () => {
-					toast.error('Failed to sign in with GitHub')
+					toast.error('Не удалось войти через GitHub')
 				},
 			},
 		)
@@ -72,13 +73,14 @@ export function RegisterForm() {
 		await authClient.signIn.social(
 			{
 				provider: 'google',
+				callbackURL: '/projects',
 			},
 			{
 				onSuccess: () => {
-					router.push('/')
+					router.push('/projects')
 				},
 				onError: () => {
-					toast.error('Failed to sign in with Google')
+					toast.error('Не удалось войти через Google')
 				},
 			},
 		)
@@ -90,14 +92,14 @@ export function RegisterForm() {
 				name: data.email,
 				email: data.email,
 				password: data.password,
-				callbackURL: '/',
+				callbackURL: '/projects',
 			},
 			{
 				onSuccess: () => {
-					router.push('/')
+					router.push('/projects')
 				},
 				onError: ctx => {
-					toast.error(`Failed to register: ${ctx.error.message}`)
+					toast.error(`Ошибка регистрации: ${ctx.error.message}`)
 				},
 			},
 		)

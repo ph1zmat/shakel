@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import localFont from 'next/font/local'
 import { ThemeProvider } from 'next-themes'
+import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import { Toaster } from '@/components/ui/sonner'
 import './globals.css'
 import { TRPCReactProvider } from '@/trpc/client'
@@ -35,23 +36,25 @@ export default function RootLayout({
 	children: React.ReactNode
 }>) {
 	return (
-		<html lang='ru'>
+		<html lang='ru' suppressHydrationWarning>
 			<body
 				className={`${gochiSans.variable} ${geistSans.variable} ${geistMono.variable} antialiased`}
 			>
-				<TRPCReactProvider>
-					<ThemeProvider
-						attribute={'class'}
-						defaultTheme='dark'
-						enableSystem
-						disableTransitionOnChange
-					>
-						<Provider>
-							{children}
-							<Toaster position='top-center' />
-						</Provider>
-					</ThemeProvider>
-				</TRPCReactProvider>
+				<NuqsAdapter>
+					<TRPCReactProvider>
+						<ThemeProvider
+							attribute={'class'}
+							defaultTheme='dark'
+							enableSystem
+							disableTransitionOnChange
+						>
+							<Provider>
+								{children}
+								<Toaster position='top-center' />
+							</Provider>
+						</ThemeProvider>
+					</TRPCReactProvider>
+				</NuqsAdapter>
 			</body>
 		</html>
 	)

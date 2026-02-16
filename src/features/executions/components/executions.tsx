@@ -66,7 +66,6 @@ export const ExecutionsContainer = ({
   return (
     <EntityContainer
       header={<ExecutionsHeader />}
-      pagination={<ExecutionsPagination />}
     >
       {children}
     </EntityContainer>

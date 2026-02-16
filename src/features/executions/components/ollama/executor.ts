@@ -2,7 +2,7 @@ import { generateText } from 'ai';
 import Handlebars from 'handlebars';
 import { NonRetriableError } from 'inngest';
 import { createOllama } from 'ollama-ai-provider-v2';
-import type { NodeExecutor } from '@/fetures/executions/types';
+import type { NodeExecutor } from '@/features/executions/types';
 import { ollamaChannel } from '@/inngest/channels/ollama';
 import prisma from '@/lib/db';
 import { AVAILABLE_MODELS } from './dialog';

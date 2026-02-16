@@ -88,7 +88,6 @@ export const CredentialsContainer = ({
     <EntityContainer
       header={<CredentialsHeader />}
       search={<CredentialsSearch />}
-      pagination={<CredentialsPagination />}
     >
       {children}
     </EntityContainer>
