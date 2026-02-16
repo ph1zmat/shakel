@@ -4,11 +4,11 @@ import { useCanvasStore } from '../../stores/canvas-store'
 import { CanvasNode, CanvasEmptyZone } from './canvas-node'
 import { SmartGuides } from './smart-guides'
 import { CodeEditorView } from './code-editor-view'
+import { BreakpointIndicator } from './breakpoint-indicator'
 import {
 	useCallback,
 	useMemo,
 	useRef,
-	useState,
 	createContext,
 	useContext,
 	type MouseEvent,
@@ -23,7 +23,6 @@ import {
 import type { CanvasViewport } from '../../utils/resolve-styles'
 
 type Viewport = CanvasViewport
-type ViewMode = 'design' | 'code'
 
 // Viewport pixel widths for scaling
 const VIEWPORT_PX: Record<Viewport, number> = {
@@ -80,9 +79,10 @@ export function BuilderCanvas({ pageId: _pageId }: BuilderCanvasProps) {
 	const ungroupNodes = useCanvasStore(state => state.ungroupNodes)
 	const zoom = useCanvasStore(state => state.zoom)
 	const snapGuides = useCanvasStore(state => state.snapGuides)
-
-	const [viewport, setViewport] = useState<Viewport>('desktop')
-	const [viewMode, setViewMode] = useState<ViewMode>('design')
+	const viewport = useCanvasStore(state => state.activeViewport)
+	const setViewport = useCanvasStore(state => state.setActiveViewport)
+	const viewMode = useCanvasStore(state => state.viewMode)
+	const setViewMode = useCanvasStore(state => state.setViewMode)
 
 	// Canvas panning state
 	const [isPanning, setIsPanning] = useState(false)
@@ -365,6 +365,11 @@ export function BuilderCanvas({ pageId: _pageId }: BuilderCanvasProps) {
 				)}
 			</div>
 
+			{/* Breakpoint indicator (Phase 1) - only in design mode */}
+			{viewMode === 'design' && (
+				<BreakpointIndicator viewport={viewport} onViewportChange={setViewport} />
+			)}
+
 			{/* Content area: Design canvas + Code editor (both mounted, toggle visibility) */}
 			<div
 				className={cn(
@@ -406,22 +411,31 @@ export function BuilderCanvas({ pageId: _pageId }: BuilderCanvasProps) {
 				>
 					<div
 						className={cn(
-							'mx-auto bg-white dark:bg-gray-950 shadow-lg rounded-lg transition-all duration-300 min-h-[600px] overflow-hidden',
+							'mx-auto bg-white dark:bg-gray-950 shadow-2xl transition-all duration-500 ease-in-out min-h-[600px] overflow-hidden',
 							viewportWidths[viewport],
+							// Device-specific styling with smooth transitions
 							viewport === 'mobile' &&
-								'border-[6px] border-gray-800 rounded-4xl',
+								'border-[8px] border-gray-900 dark:border-gray-950 rounded-[2.5rem] shadow-xl',
+							viewport === 'tablet' &&
+								'border-[6px] border-gray-800 dark:border-gray-900 rounded-2xl',
+							viewport === 'desktop' && 'rounded-lg border border-gray-200 dark:border-gray-800',
 						)}
 						style={{
 							transform: `scale(${zoom}) translate(${panOffset.x / zoom}px, ${panOffset.y / zoom}px)`,
 							transformOrigin: 'top center',
 						}}
 					>
+						{/* Device notch for mobile (iPhone-like) */}
+						{viewport === 'mobile' && (
+							<div className='absolute top-0 left-1/2 -translate-x-1/2 z-50 w-32 h-6 bg-gray-900 dark:bg-black rounded-b-2xl shadow-lg' />
+						)}
+
 						{/* Simulated browser chrome */}
 						<div className='flex items-center gap-2 px-4 py-2.5 bg-gray-50 dark:bg-gray-900 border-b rounded-t-lg'>
 							<div className='flex gap-1.5'>
-								<div className='w-2.5 h-2.5 rounded-full bg-red-400' />
-								<div className='w-2.5 h-2.5 rounded-full bg-yellow-400' />
-								<div className='w-2.5 h-2.5 rounded-full bg-green-400' />
+								<div className='w-2.5 h-2.5 rounded-full bg-red-400 transition-opacity hover:opacity-70' />
+								<div className='w-2.5 h-2.5 rounded-full bg-yellow-400 transition-opacity hover:opacity-70' />
+								<div className='w-2.5 h-2.5 rounded-full bg-green-400 transition-opacity hover:opacity-70' />
 							</div>
 							<div className='flex-1 mx-8'>
 								<div className='bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md px-3 py-1 text-[11px] text-gray-400 text-center truncate'>

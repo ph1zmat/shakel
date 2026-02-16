@@ -96,6 +96,9 @@ interface Command {
 // State Interface
 // ========================================
 
+export type CanvasViewport = 'mobile' | 'tablet' | 'desktop'
+export type ViewMode = 'design' | 'code'
+
 interface CanvasState {
 	// Project Data
 	project: Project | null
@@ -119,6 +122,10 @@ interface CanvasState {
 		sourceIndex: number
 	} | null
 
+	// Viewport & View Mode (Phase 1)
+	activeViewport: CanvasViewport
+	viewMode: ViewMode
+
 	// Smart guides (transient)
 	snapGuides: SnapLine[]
 
@@ -132,6 +139,10 @@ interface CanvasState {
 	setProject: (project: Project) => void
 	setPages: (pages: Page[]) => void
 	setCurrentPage: (pageId: string) => void
+
+	// Viewport & View Mode (Phase 1)
+	setActiveViewport: (viewport: CanvasViewport) => void
+	setViewMode: (mode: ViewMode) => void
 
 	// Node CRUD
 	addNode: (type: string, parentId: string | null) => string
@@ -307,6 +318,8 @@ export const useCanvasStore = create<CanvasState>()(
 			isDragging: false,
 			isResizing: false,
 			dragPayload: null,
+			activeViewport: 'desktop',
+			viewMode: 'design',
 			snapGuides: [],
 			history: [],
 			historyIndex: -1,
@@ -333,6 +346,19 @@ export const useCanvasStore = create<CanvasState>()(
 				set(state => {
 					state.currentPageId = pageId
 					state.selectedNodeId = null
+				})
+			},
+
+			// Viewport & View Mode
+			setActiveViewport: viewport => {
+				set(state => {
+					state.activeViewport = viewport
+				})
+			},
+
+			setViewMode: mode => {
+				set(state => {
+					state.viewMode = mode
 				})
 			},
 
