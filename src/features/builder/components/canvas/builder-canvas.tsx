@@ -77,6 +77,9 @@ export function BuilderCanvas({ pageId: _pageId }: BuilderCanvasProps) {
 	const updateNodeSize = useCanvasStore(state => state.updateNodeSize)
 	const groupNodes = useCanvasStore(state => state.groupNodes)
 	const ungroupNodes = useCanvasStore(state => state.ungroupNodes)
+	const copyNodes = useCanvasStore(state => state.copyNodes)
+	const pasteNodes = useCanvasStore(state => state.pasteNodes)
+	const duplicateNodes = useCanvasStore(state => state.duplicateNodes)
 	const zoom = useCanvasStore(state => state.zoom)
 	const snapGuides = useCanvasStore(state => state.snapGuides)
 	const viewport = useCanvasStore(state => state.activeViewport)
@@ -391,10 +394,15 @@ export function BuilderCanvas({ pageId: _pageId }: BuilderCanvasProps) {
 					onClick={handleCanvasClick}
 					onMouseDown={handleCanvasMouseDown}
 					onKeyDown={e => {
+						// Escape = deselect
 						if (e.key === 'Escape') selectNode(null)
+						
+						// Delete/Backspace = remove selected nodes
 						if (e.key === 'Delete' || e.key === 'Backspace') {
 							for (const id of selectedNodeIds) removeNode(id)
 						}
+						
+						// Ctrl+G / Cmd+G = group
 						if ((e.ctrlKey || e.metaKey) && e.key === 'g') {
 							e.preventDefault()
 							if (e.shiftKey) {
@@ -406,6 +414,25 @@ export function BuilderCanvas({ pageId: _pageId }: BuilderCanvasProps) {
 								// Ctrl+G = group
 								if (selectedNodeIds.length >= 2) groupNodes()
 							}
+						}
+						
+						// Phase 2: Copy/Paste/Duplicate keyboard shortcuts
+						// Ctrl+C / Cmd+C = copy
+						if ((e.ctrlKey || e.metaKey) && e.key === 'c' && selectedNodeIds.length > 0) {
+							e.preventDefault()
+							copyNodes(selectedNodeIds)
+						}
+						
+						// Ctrl+V / Cmd+V = paste
+						if ((e.ctrlKey || e.metaKey) && e.key === 'v') {
+							e.preventDefault()
+							pasteNodes()
+						}
+						
+						// Ctrl+D / Cmd+D = duplicate
+						if ((e.ctrlKey || e.metaKey) && e.key === 'd' && selectedNodeIds.length > 0) {
+							e.preventDefault()
+							duplicateNodes(selectedNodeIds)
 						}
 					}}
 				>

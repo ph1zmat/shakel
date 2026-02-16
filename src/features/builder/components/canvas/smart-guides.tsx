@@ -21,6 +21,8 @@ interface SnapResult {
 }
 
 const SNAP_THRESHOLD = 6 // px
+const GRID_SIZE = 8 // px for grid snapping (Phase 2)
+const SPACING_SNAP = [8, 16, 24, 32, 40, 48] // Common spacing values (Phase 2)
 
 // ========================================
 // Snap Engine
@@ -34,12 +36,26 @@ export function calculateSnap(
 	dragH: number,
 	allNodes: Record<string, ComponentNode>,
 	pageId: string | null,
+	enableGridSnap = true, // Phase 2: Grid snapping toggle
 ): SnapResult {
 	const guides: SnapLine[] = []
 	let snappedX = dragX
 	let snappedY = dragY
 
 	if (!pageId) return { x: snappedX, y: snappedY, guides }
+
+	// Phase 2: Grid snapping (takes precedence if no element snapping found)
+	if (enableGridSnap) {
+		const gridSnappedX = Math.round(dragX / GRID_SIZE) * GRID_SIZE
+		const gridSnappedY = Math.round(dragY / GRID_SIZE) * GRID_SIZE
+		
+		if (Math.abs(dragX - gridSnappedX) < SNAP_THRESHOLD) {
+			snappedX = gridSnappedX
+		}
+		if (Math.abs(dragY - gridSnappedY) < SNAP_THRESHOLD) {
+			snappedY = gridSnappedY
+		}
+	}
 
 	const otherNodes = Object.values(allNodes).filter(
 		n =>
@@ -125,6 +141,45 @@ export function calculateSnap(
 					from: minX,
 					to: maxX,
 				})
+			}
+		}
+
+		// Phase 2: Spacing snapping (consistent gaps between elements)
+		// Check horizontal spacing (gap between right edge of other and left edge of dragged)
+		const hGap = dragLeft - oRight
+		for (const spacing of SPACING_SNAP) {
+			if (Math.abs(hGap - spacing) < SNAP_THRESHOLD) {
+				const snapX = oRight + spacing
+				if (Math.abs(dragLeft - snapX) < closestDx) {
+					closestDx = Math.abs(dragLeft - snapX)
+					snappedX = dragX + (snapX - dragLeft)
+					// Show spacing guide
+					guides.push({
+						type: 'vertical',
+						position: snapX,
+						from: Math.min(dragTop, oTop),
+						to: Math.max(dragBottom, oBottom),
+					})
+				}
+			}
+		}
+
+		// Check vertical spacing (gap between bottom edge of other and top edge of dragged)
+		const vGap = dragTop - oBottom
+		for (const spacing of SPACING_SNAP) {
+			if (Math.abs(vGap - spacing) < SNAP_THRESHOLD) {
+				const snapY = oBottom + spacing
+				if (Math.abs(dragTop - snapY) < closestDy) {
+					closestDy = Math.abs(dragTop - snapY)
+					snappedY = dragY + (snapY - dragTop)
+					// Show spacing guide
+					guides.push({
+						type: 'horizontal',
+						position: snapY,
+						from: Math.min(dragLeft, oLeft),
+						to: Math.max(dragRight, oRight),
+					})
+				}
 			}
 		}
 	}

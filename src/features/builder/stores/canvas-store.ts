@@ -126,6 +126,9 @@ interface CanvasState {
 	activeViewport: CanvasViewport
 	viewMode: ViewMode
 
+	// Clipboard (Phase 2)
+	clipboard: ComponentNode[]
+
 	// Smart guides (transient)
 	snapGuides: SnapLine[]
 
@@ -200,6 +203,11 @@ interface CanvasState {
 	// Group operations
 	groupNodes: () => string | null
 	ungroupNodes: (groupId: string) => void
+
+	// Copy/Paste (Phase 2)
+	copyNodes: (nodeIds: string[]) => void
+	pasteNodes: (offset?: { x: number; y: number }) => void
+	duplicateNodes: (nodeIds: string[]) => void
 
 	// Multi-move
 	moveSelectedNodes: (dx: number, dy: number) => void
@@ -320,6 +328,7 @@ export const useCanvasStore = create<CanvasState>()(
 			dragPayload: null,
 			activeViewport: 'desktop',
 			viewMode: 'design',
+			clipboard: [],
 			snapGuides: [],
 			history: [],
 			historyIndex: -1,
@@ -1128,6 +1137,80 @@ export const useCanvasStore = create<CanvasState>()(
 					const childIds = children.map(c => c.id)
 					state.selectedNodeIds = childIds
 					state.selectedNodeId = childIds[0] ?? null
+				})
+			},
+
+			// Copy/Paste (Phase 2)
+			copyNodes: nodeIds => {
+				const { nodes } = get()
+				const nodesToCopy = nodeIds
+					.map(id => nodes[id])
+					.filter(Boolean) as ComponentNode[]
+
+				set(state => {
+					// Deep clone nodes to clipboard
+					state.clipboard = nodesToCopy.map(node => ({
+						...node,
+						id: generateId(), // New IDs for paste
+					}))
+				})
+			},
+
+			pasteNodes: (offset = { x: 20, y: 20 }) => {
+				const { clipboard, currentPageId } = get()
+				if (clipboard.length === 0 || !currentPageId) return
+
+				set(state => {
+					const newNodeIds: string[] = []
+
+					for (const clipNode of clipboard) {
+						const newNode: ComponentNode = {
+							...clipNode,
+							id: generateId(),
+							pageId: currentPageId,
+							position: {
+								x: clipNode.position.x + offset.x,
+								y: clipNode.position.y + offset.y,
+							},
+						}
+						state.nodes[newNode.id] = newNode
+						newNodeIds.push(newNode.id)
+					}
+
+					// Select newly pasted nodes
+					state.selectedNodeIds = newNodeIds
+					state.selectedNodeId = newNodeIds[0] ?? null
+				})
+			},
+
+			duplicateNodes: nodeIds => {
+				const { nodes, currentPageId } = get()
+				if (!currentPageId) return
+
+				const nodesToDuplicate = nodeIds
+					.map(id => nodes[id])
+					.filter(Boolean) as ComponentNode[]
+
+				set(state => {
+					const newNodeIds: string[] = []
+
+					for (const node of nodesToDuplicate) {
+						const newNode: ComponentNode = {
+							...node,
+							id: generateId(),
+							pageId: currentPageId,
+							position: {
+								x: node.position.x + 20,
+								y: node.position.y + 20,
+							},
+						}
+						state.nodes[newNode.id] = newNode
+						newNodeIds.push(newNode.id)
+					}
+
+					// Select newly duplicated nodes
+					state.selectedNodeIds = newNodeIds
+					state.selectedNodeId = newNodeIds[0] ?? null
 				})
 			},
 
