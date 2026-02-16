@@ -20,7 +20,7 @@ const ProductMockup = () => {
 			{/* Browser chrome */}
 			<div className='relative rounded-xl border border-white/10 bg-[#0f0f14] overflow-hidden shadow-2xl shadow-black/50'>
 				{/* Window header */}
-				<div className='flex items-center gap-2 px-4 py-3 border-b border-white/5 bg-white/[0.02]'>
+				<div className='flex items-center gap-2 px-4 py-3 border-b border-white/5 bg-white/2'>
 					<div className='flex gap-1.5'>
 						<div className='w-3 h-3 rounded-full bg-red-500/80' />
 						<div className='w-3 h-3 rounded-full bg-yellow-500/80' />
@@ -37,9 +37,9 @@ const ProductMockup = () => {
 				{/* App interface */}
 				<div className='flex h-[400px]'>
 					{/* Sidebar */}
-					<div className='w-56 border-r border-white/5 bg-white/[0.01] p-4 hidden sm:block'>
+					<div className='w-56 border-r border-white/5 bg-white/1 p-4 hidden sm:block'>
 						<div className='flex items-center gap-2 mb-6'>
-							<div className='w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-lime-500 flex items-center justify-center text-white text-sm font-bold'>
+							<div className='w-8 h-8 rounded-lg bg-linear-to-br from-blue-500 to-lime-500 flex items-center justify-center text-white text-sm font-bold'>
 								S
 							</div>
 							<span className='text-white/80 font-medium'>Shakel</span>
@@ -119,10 +119,10 @@ const ProductMockup = () => {
 									initial={{ opacity: 0, y: 20 }}
 									animate={{ opacity: 1, y: 0 }}
 									transition={{ delay: 1 + i * 0.1, ease: EASE_OUT_EXPO }}
-									className='p-4 rounded-xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.04] transition-colors cursor-pointer group'
+									className='p-4 rounded-xl border border-white/10 bg-white/2 hover:bg-white/4 transition-colors cursor-pointer group'
 								>
 									<div className='flex items-start justify-between mb-3'>
-										<div className='w-10 h-10 rounded-lg bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center text-lg'>
+										<div className='w-10 h-10 rounded-lg bg-linear-to-br from-white/10 to-white/5 flex items-center justify-center text-lg'>
 											{['🚀', '🛒', '✍️', '📊'][i]}
 										</div>
 										<div className={`w-2 h-2 rounded-full ${project.color}`} />
@@ -138,7 +138,7 @@ const ProductMockup = () => {
 				</div>
 
 				{/* Bottom gradient fade */}
-				<div className='absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#0a0a0f] to-transparent pointer-events-none' />
+				<div className='absolute bottom-0 left-0 right-0 h-24 bg-linear-to-t from-[#0a0a0f] to-transparent pointer-events-none' />
 			</div>
 
 			{/* Floating elements */}
@@ -234,7 +234,7 @@ export const Hero = () => {
 					>
 						Создавайте приложения
 						<br />
-						<span className='text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-blue-500 to-lime-400'>
+						<span className='text-transparent bg-clip-text bg-linear-to-r from-blue-400 via-blue-500 to-lime-400'>
 							без единой строки кода
 						</span>
 					</motion.h1>

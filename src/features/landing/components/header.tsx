@@ -50,7 +50,7 @@ export function Header({ children }: { children: React.ReactNode }) {
 							<a href='/login'>Вход</a>
 						</Button>
 						<Button variant='gradient' size='sm' asChild>
-							<a href='/demo'>Демо</a>
+							<a href='/signup'>Начать</a>
 						</Button>
 					</div>
 				</NavBody>
@@ -91,7 +91,7 @@ export function Header({ children }: { children: React.ReactNode }) {
 								onClick={() => setIsMobileMenuOpen(false)}
 								asChild
 							>
-								<a href='/demo'>Демо</a>
+								<a href='/signup'>Начать</a>
 							</Button>
 						</div>
 					</MobileNavMenu>

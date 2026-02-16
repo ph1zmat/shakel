@@ -1,0 +1,8 @@
+{
+	"chat.tools.terminal.autoApprove": {
+		"/^\\(Get-Content \"src\\\\features\\\\design-system\\\\components\\\\spacing-token-editor\\.tsx\"\\) -replace 'tokenId: spacing\\\\\\.id', 'id: spacing\\.id' \\| Set-Content \"src\\\\features\\\\design-system\\\\components\\\\spacing-token-editor\\.tsx\"$/": {
+			"approve": true,
+			"matchCommandLine": true
+		}
+	}
+}

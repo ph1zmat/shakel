@@ -32,7 +32,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { useCredentialsByType } from '@/fetures/credentials/hooks/use-credentials';
+import { useCredentialsByType } from '@/features/credentials/hooks/use-credentials';
 import { CredentialType } from '@/generated/prisma/enums';
 
 export const AVAILABLE_MODELS = [

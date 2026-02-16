@@ -327,6 +327,46 @@ enum Platform {
   @@map("platform")
 }
 
+// ========================================
+// AI Generation Jobs (Inngest-backed)
+// ========================================
+
+enum AiJobStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+
+  @@map("ai_job_status")
+}
+
+model AiGenerationJob {
+  id             String      @id @default(cuid())
+  inngestEventId String?
+  status         AiJobStatus @default(PENDING)
+
+  // Input
+  prompt  String @db.Text
+  mode    String @default("auto") // interface | animation | content | auto
+  pageId  String
+  originX Float  @default(100)
+  originY Float  @default(100)
+
+  // Output
+  resultNodes Json? // ComponentNode[] as JSON
+  explanation String? @db.Text
+  error       String? @db.Text
+
+  // Owner
+  userId String
+
+  createdAt   DateTime  @default(now())
+  completedAt DateTime?
+
+  @@index([userId, status])
+  @@map("ai_generation_job")
+}
+
 enum PublishStatus {
   DRAFT
   PUBLISHED

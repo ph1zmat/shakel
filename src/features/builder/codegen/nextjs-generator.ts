@@ -5,6 +5,7 @@ import { Project, SourceFile, Writers } from 'ts-morph';
 import { ts } from 'ts-morph'; // For ts.JsxEmit, etc.
 import type { ComponentNode, StyleConfig, StyleValue, Project as ProjectType, Page } from '../stores/canvas-store';
 import { componentRegistry, getComponentDefinition } from '@/lib/codegen/component-registry';
+import { inferSpatialParentage } from './infer-nesting';
 
 // ========================================
 // Types
@@ -162,8 +163,8 @@ export default function RootLayout({
     // Группируем ноды по parentId
     const nodeTree = this.buildNodeTree(nodes);
     
-    // Находим корневые ноды
-    const rootNodes = nodes.filter(n => n.parentId === null).sort((a, b) => a.order - b.order);
+    // Находим корневые ноды (from the tree, which may have inferred parentage)
+    const rootNodes = nodeTree.get(null)?.sort((a, b) => a.order - b.order) ?? [];
     
     // Генерируем JSX для каждого корневого нода
     const rootElements = rootNodes.map(node => this.generateJSXForNode(node, nodeTree));
@@ -200,9 +201,11 @@ ${rootElements.join('\n')}
    * Построение дерева нод
    */
   private buildNodeTree(nodes: ComponentNode[]): Map<string | null, ComponentNode[]> {
+    const resolved = inferSpatialParentage(nodes);
+
     const tree = new Map<string | null, ComponentNode[]>();
     
-    for (const node of nodes) {
+    for (const node of resolved) {
       const key = node.parentId;
       if (!tree.has(key)) {
         tree.set(key, []);

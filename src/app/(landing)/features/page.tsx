@@ -1070,7 +1070,7 @@ export default function FeaturesPage() {
 
             <div className="flex flex-wrap justify-center gap-4">
               <Button variant="gradient" size="lg" className="px-8" asChild>
-                <a href="/register">Начать бесплатно</a>
+                <a href="/signup">Начать бесплатно</a>
               </Button>
               <Button variant="outline" size="lg" className="px-8 border-white/20 text-white hover:bg-white/10" asChild>
                 <a href="#demo" className="flex items-center gap-2">
@@ -1192,7 +1192,7 @@ export default function FeaturesPage() {
                 Начните бесплатно. Никакой карты не требуется.
               </p>
               <Button variant="gradient" size="lg" className="px-8" asChild>
-                <a href="/register" className="flex items-center gap-2">
+                <a href="/signup" className="flex items-center gap-2">
                   Создать аккаунт
                   <ArrowRight className="w-4 h-4" />
                 </a>
