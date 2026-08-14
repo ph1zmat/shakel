@@ -27,7 +27,9 @@ export async function proxy(request: NextRequest) {
   }
 
   // Проверяем сессию через cookie better-auth
-  const sessionCookie = request.cookies.get('better-auth.session_token');
+  const sessionCookie =
+    request.cookies.get('better-auth.session_token') ||
+    request.cookies.get('__Secure-better-auth.session_token');
 
   if (!sessionCookie) {
     // Если нет сессии, редиректим на логин

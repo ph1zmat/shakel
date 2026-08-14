@@ -334,7 +334,7 @@ export default function PricingPage() {
             <div className="relative z-10 grid md:grid-cols-2 gap-12 items-center">
               <div>
                 <h2 className="text-3xl font-bold text-white mb-4">
-                  Enterprise?
+                  Enterprise
                 </h2>
                 <p className="text-white/50 mb-8">
                   Индивидуальные условия для крупных организаций. Dedicated
