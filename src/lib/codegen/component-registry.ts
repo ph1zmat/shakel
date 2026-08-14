@@ -35,24 +35,24 @@ export interface ComponentDefinition {
   label: string;
   description?: string;
   icon: string;
-  
+
   // Can have children?
   isContainer: boolean;
-  
+
   // Props schema
   props: PropSchema[];
-  
+
   // Style properties которые можно настраивать
   styleProperties: StyleProperty[];
-  
+
   // Default значения
   defaultProps: Record<string, unknown>;
   defaultStyles: StyleConfig;
-  
+
   // Code generation info
   imports: string[];
   componentName: string;
-  
+
   // Platform availability
   platforms: ('web' | 'telegram')[];
 }
@@ -91,7 +91,7 @@ export const componentRegistry: Record<string, ComponentDefinition> = {
   // ========================================
   // Layout Components
   // ========================================
-  
+
   container: {
     type: 'container',
     category: 'layout',
@@ -248,7 +248,17 @@ export const componentRegistry: Record<string, ComponentDefinition> = {
         name: 'as',
         label: 'Element',
         type: 'select',
-        schema: z.enum(['p', 'span', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']),
+        schema: z.enum([
+          'p',
+          'span',
+          'div',
+          'h1',
+          'h2',
+          'h3',
+          'h4',
+          'h5',
+          'h6',
+        ]),
         defaultValue: 'p',
         options: [
           { label: 'Paragraph', value: 'p' },
@@ -343,8 +353,16 @@ export const componentRegistry: Record<string, ComponentDefinition> = {
     },
     defaultStyles: {
       base: {
-        backgroundColor: { type: 'token', tokenType: 'color', value: 'primary' },
-        color: { type: 'token', tokenType: 'color', value: 'primary-foreground' },
+        backgroundColor: {
+          type: 'token',
+          tokenType: 'color',
+          value: 'primary',
+        },
+        color: {
+          type: 'token',
+          tokenType: 'color',
+          value: 'primary-foreground',
+        },
         padding: { type: 'token', tokenType: 'spacing', value: 'md' },
         borderRadius: { type: 'token', tokenType: 'spacing', value: 'sm' },
       },
@@ -384,9 +402,7 @@ export const componentRegistry: Record<string, ComponentDefinition> = {
         defaultValue: false,
       },
     ],
-    styleProperties: [
-      { name: 'color', label: 'Color', type: 'color' },
-    ],
+    styleProperties: [{ name: 'color', label: 'Color', type: 'color' }],
     defaultProps: {
       text: 'Click here',
       href: '#',
@@ -499,9 +515,7 @@ export const componentRegistry: Record<string, ComponentDefinition> = {
         defaultValue: 'Form submitted successfully!',
       },
     ],
-    styleProperties: [
-      { name: 'gap', label: 'Gap', type: 'spacing' },
-    ],
+    styleProperties: [{ name: 'gap', label: 'Gap', type: 'spacing' }],
     defaultProps: {
       submitLabel: 'Submit',
       successMessage: 'Form submitted successfully!',
@@ -709,43 +723,63 @@ export const componentRegistry: Record<string, ComponentDefinition> = {
 // Helpers
 // ========================================
 
-export function getComponentDefinition(type: string): ComponentDefinition | undefined {
+export function getComponentDefinition(
+  type: string,
+): ComponentDefinition | undefined {
   return componentRegistry[type];
 }
 
-export function getComponentsByCategory(category: string): ComponentDefinition[] {
-  return Object.values(componentRegistry).filter(c => c.category === category);
+export function getComponentsByCategory(
+  category: string,
+): ComponentDefinition[] {
+  return Object.values(componentRegistry).filter(
+    (c) => c.category === category,
+  );
 }
 
-export function getComponentsByPlatform(platform: 'web' | 'telegram'): ComponentDefinition[] {
-  return Object.values(componentRegistry).filter(c => c.platforms.includes(platform));
+export function getComponentsByPlatform(
+  platform: 'web' | 'telegram',
+): ComponentDefinition[] {
+  return Object.values(componentRegistry).filter((c) =>
+    c.platforms.includes(platform),
+  );
 }
 
 export function getDefaultProps(type: string): Record<string, unknown> {
   const def = componentRegistry[type];
   if (!def) return {};
-  
-  return def.props.reduce((acc, prop) => {
-    acc[prop.name] = prop.defaultValue;
-    return acc;
-  }, {} as Record<string, unknown>);
+
+  return def.props.reduce(
+    (acc, prop) => {
+      acc[prop.name] = prop.defaultValue;
+      return acc;
+    },
+    {} as Record<string, unknown>,
+  );
 }
 
-export function validateProps(type: string, props: Record<string, unknown>): { valid: boolean; errors?: string[] } {
+export function validateProps(
+  type: string,
+  props: Record<string, unknown>,
+): { valid: boolean; errors?: string[] } {
   const def = componentRegistry[type];
-  if (!def) return { valid: false, errors: [`Unknown component type: ${type}`] };
-  
+  if (!def)
+    return { valid: false, errors: [`Unknown component type: ${type}`] };
+
   const errors: string[] = [];
-  
+
   for (const prop of def.props) {
     try {
       prop.schema.parse(props[prop.name]);
     } catch (error) {
       if (error instanceof z.ZodError) {
-        errors.push(`${prop.name}: ${error.errors[0]?.message}`);
+        errors.push(`${prop.name}: ${error.issues[0]?.message}`);
       }
     }
   }
-  
-  return { valid: errors.length === 0, errors: errors.length > 0 ? errors : undefined };
+
+  return {
+    valid: errors.length === 0,
+    errors: errors.length > 0 ? errors : undefined,
+  };
 }

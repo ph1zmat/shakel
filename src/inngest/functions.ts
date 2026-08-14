@@ -1,5 +1,5 @@
 import { NonRetriableError } from 'inngest';
-import { getExecutor } from '@/fetures/executions/lib/executor-registry';
+import { getExecutor } from '@/features/executions/lib/executor-registry';
 import { ExecutionStatus, type NodeType } from '@/generated/prisma/enums';
 import { inngest } from '@/inngest/client';
 import prisma from '@/lib/db';

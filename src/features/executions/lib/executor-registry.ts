@@ -1,6 +1,6 @@
-import { googleFormTriggerExecutor } from '@/fetures/triggers/components/google-form-trigger/executor';
-import { manualTriggerExecutor } from '@/fetures/triggers/components/manual-trigger/executor';
-import { stripeTriggerExecutor } from '@/fetures/triggers/components/stripe-trigger/executor';
+import { googleFormTriggerExecutor } from '@/features/triggers/components/google-form-trigger/executor';
+import { manualTriggerExecutor } from '@/features/triggers/components/manual-trigger/executor';
+import { stripeTriggerExecutor } from '@/features/triggers/components/stripe-trigger/executor';
 import { NodeType } from '@/generated/prisma/enums';
 import { deepseekExecutor } from '../components/deepseek/executor';
 import { discordExecutor } from '../components/discord/executor';

@@ -27,6 +27,7 @@ import {
 } from 'motion/react';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
+import { cn } from '@/lib/utils';
 import Anthropic from './anthropic';
 import AnthropicDark from './anthropic-dark';
 import DeepSeek from './deepseek';
@@ -34,7 +35,6 @@ import Google from './gemini';
 import MistralAI from './mistral';
 import OpenAI from './open-ai';
 import OpenAIDark from './open-ai-dark';
-import { cn } from '@/lib/utils';
 
 interface BentoItem {
   id: string;

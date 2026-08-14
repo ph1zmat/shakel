@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 // Импортируйте нужную анимацию:
 // import { NeuralNetwork } from '@/components/ui/hero-animations';
@@ -23,7 +24,7 @@ export const Hero = () => {
         </p>
         <div className="flex gap-4">
           <Button variant="gradient" size="lg" className="px-8" asChild>
-            <a href="#get-started">Начать сейчас</a>
+            <Link href="/projects/new">Начать сейчас</Link>
           </Button>
           <Button
             variant="outline"
@@ -31,7 +32,7 @@ export const Hero = () => {
             className="px-8 border-primary/20 hover:bg-primary/5"
             asChild
           >
-            <a href="#pricing">Изучить цены</a>
+            <Link href="/pricing">Изучить цены</Link>
           </Button>
         </div>
       </div>

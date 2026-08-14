@@ -1,21 +1,84 @@
-import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
-import { createTRPCRouter, protectedProcedure } from '@/trpc/init';
-import prisma from '@/lib/db';
-import { Platform, PublishStatus } from '@/generated/prisma/enums';
+import { z } from 'zod';
 import { PAGINATION } from '@/config/constants';
+import { Platform, PublishStatus } from '@/generated/prisma/enums';
+import prisma from '@/lib/db';
+import { createTRPCRouter, protectedProcedure } from '@/trpc/init';
 
 // Default tokens for auto-created DesignSystem
 const DEFAULT_COLORS = [
-  { name: 'background', hue: 0, saturation: 0, lightness: 100, isSemantic: true, semanticRole: 'background' },
-  { name: 'foreground', hue: 0, saturation: 0, lightness: 0, isSemantic: true, semanticRole: 'foreground' },
-  { name: 'primary', hue: 217, saturation: 91, lightness: 60, isSemantic: true, semanticRole: 'accent' },
-  { name: 'primary-foreground', hue: 0, saturation: 0, lightness: 100, isSemantic: true, semanticRole: 'accent' },
-  { name: 'muted', hue: 0, saturation: 0, lightness: 95, isSemantic: true, semanticRole: 'muted' },
-  { name: 'muted-foreground', hue: 0, saturation: 0, lightness: 45, isSemantic: true, semanticRole: 'muted' },
-  { name: 'danger', hue: 0, saturation: 84, lightness: 60, isSemantic: true, semanticRole: 'danger' },
-  { name: 'success', hue: 142, saturation: 71, lightness: 45, isSemantic: true, semanticRole: 'success' },
-  { name: 'warning', hue: 38, saturation: 92, lightness: 50, isSemantic: true, semanticRole: 'warning' },
+  {
+    name: 'background',
+    hue: 0,
+    saturation: 0,
+    lightness: 100,
+    isSemantic: true,
+    semanticRole: 'background',
+  },
+  {
+    name: 'foreground',
+    hue: 0,
+    saturation: 0,
+    lightness: 0,
+    isSemantic: true,
+    semanticRole: 'foreground',
+  },
+  {
+    name: 'primary',
+    hue: 217,
+    saturation: 91,
+    lightness: 60,
+    isSemantic: true,
+    semanticRole: 'accent',
+  },
+  {
+    name: 'primary-foreground',
+    hue: 0,
+    saturation: 0,
+    lightness: 100,
+    isSemantic: true,
+    semanticRole: 'accent',
+  },
+  {
+    name: 'muted',
+    hue: 0,
+    saturation: 0,
+    lightness: 95,
+    isSemantic: true,
+    semanticRole: 'muted',
+  },
+  {
+    name: 'muted-foreground',
+    hue: 0,
+    saturation: 0,
+    lightness: 45,
+    isSemantic: true,
+    semanticRole: 'muted',
+  },
+  {
+    name: 'danger',
+    hue: 0,
+    saturation: 84,
+    lightness: 60,
+    isSemantic: true,
+    semanticRole: 'danger',
+  },
+  {
+    name: 'success',
+    hue: 142,
+    saturation: 71,
+    lightness: 45,
+    isSemantic: true,
+    semanticRole: 'success',
+  },
+  {
+    name: 'warning',
+    hue: 38,
+    saturation: 92,
+    lightness: 50,
+    isSemantic: true,
+    semanticRole: 'warning',
+  },
 ];
 
 const DEFAULT_SPACING = [
@@ -29,9 +92,30 @@ const DEFAULT_SPACING = [
 ];
 
 const DEFAULT_TYPOGRAPHY = [
-  { name: 'heading', family: 'Inter', weights: [400, 500, 600, 700], minSize: 1.5, maxSize: 3, lineHeight: 1.2 },
-  { name: 'body', family: 'Inter', weights: [400, 500], minSize: 0.875, maxSize: 1, lineHeight: 1.5 },
-  { name: 'mono', family: 'JetBrains Mono', weights: [400, 500], minSize: 0.875, maxSize: 1, lineHeight: 1.5 },
+  {
+    name: 'heading',
+    family: 'Inter',
+    weights: [400, 500, 600, 700],
+    minSize: 1.5,
+    maxSize: 3,
+    lineHeight: 1.2,
+  },
+  {
+    name: 'body',
+    family: 'Inter',
+    weights: [400, 500],
+    minSize: 0.875,
+    maxSize: 1,
+    lineHeight: 1.5,
+  },
+  {
+    name: 'mono',
+    family: 'JetBrains Mono',
+    weights: [400, 500],
+    minSize: 0.875,
+    maxSize: 1,
+    lineHeight: 1.5,
+  },
 ];
 
 export const projectRouter = createTRPCRouter({
@@ -40,12 +124,18 @@ export const projectRouter = createTRPCRouter({
   // ========================================
 
   getMany: protectedProcedure
-    .input(z.object({
-      page: z.number().default(PAGINATION.DEFAULT_PAGE),
-      pageSize: z.number().min(PAGINATION.MIN_PAGE_SIZE).max(PAGINATION.MAX_PAGE_SIZE).default(PAGINATION.DEFAULT_PAGE_SIZE),
-      search: z.string().default(''),
-      platform: z.enum(['WEB', 'TELEGRAM_BOT']).optional(),
-    }))
+    .input(
+      z.object({
+        page: z.number().default(PAGINATION.DEFAULT_PAGE),
+        pageSize: z
+          .number()
+          .min(PAGINATION.MIN_PAGE_SIZE)
+          .max(PAGINATION.MAX_PAGE_SIZE)
+          .default(PAGINATION.DEFAULT_PAGE_SIZE),
+        search: z.string().default(''),
+        platform: z.enum(['WEB', 'TELEGRAM_BOT']).optional(),
+      }),
+    )
     .query(async ({ ctx, input }) => {
       const { page, pageSize, search, platform } = input;
 
@@ -98,6 +188,26 @@ export const projectRouter = createTRPCRouter({
       };
     }),
 
+  getById: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const project = await prisma.project.findFirst({
+        where: {
+          id: input.id,
+          userId: ctx.auth.user.id,
+        },
+      });
+
+      if (!project) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Project not found',
+        });
+      }
+
+      return project;
+    }),
+
   getOne: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
@@ -137,17 +247,22 @@ export const projectRouter = createTRPCRouter({
       });
 
       if (!project) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Project not found' });
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Project not found',
+        });
       }
 
       return project;
     }),
 
   create: protectedProcedure
-    .input(z.object({
-      name: z.string().min(1).max(100),
-      platform: z.enum(['WEB', 'TELEGRAM_BOT']),
-    }))
+    .input(
+      z.object({
+        name: z.string().min(1).max(100),
+        platform: z.enum(['WEB', 'TELEGRAM_BOT']),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       return prisma.$transaction(async (tx) => {
         // Create DesignSystem first
@@ -233,11 +348,13 @@ export const projectRouter = createTRPCRouter({
     }),
 
   update: protectedProcedure
-    .input(z.object({
-      id: z.string(),
-      name: z.string().min(1).max(100).optional(),
-      status: z.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED']).optional(),
-    }))
+    .input(
+      z.object({
+        id: z.string(),
+        name: z.string().min(1).max(100).optional(),
+        status: z.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED']).optional(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       const project = await prisma.project.findFirst({
         where: {
@@ -247,7 +364,10 @@ export const projectRouter = createTRPCRouter({
       });
 
       if (!project) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Project not found' });
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Project not found',
+        });
       }
 
       const { id, ...data } = input;
@@ -268,7 +388,10 @@ export const projectRouter = createTRPCRouter({
       });
 
       if (!project) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Project not found' });
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Project not found',
+        });
       }
 
       return prisma.project.delete({
@@ -295,21 +418,26 @@ export const projectRouter = createTRPCRouter({
       });
 
       if (!project) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Web project not found' });
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Web project not found',
+        });
       }
 
       return project.webConfig;
     }),
 
   updateWebConfig: protectedProcedure
-    .input(z.object({
-      projectId: z.string(),
-      domain: z.string().optional(),
-      seoTitle: z.string().optional(),
-      seoDescription: z.string().optional(),
-      favicon: z.string().optional(),
-      basePath: z.string().optional(),
-    }))
+    .input(
+      z.object({
+        projectId: z.string(),
+        domain: z.string().optional(),
+        seoTitle: z.string().optional(),
+        seoDescription: z.string().optional(),
+        favicon: z.string().optional(),
+        basePath: z.string().optional(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       const project = await prisma.project.findFirst({
         where: {
@@ -320,7 +448,10 @@ export const projectRouter = createTRPCRouter({
       });
 
       if (!project) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Web project not found' });
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Web project not found',
+        });
       }
 
       const { projectId, ...data } = input;
@@ -354,20 +485,25 @@ export const projectRouter = createTRPCRouter({
       });
 
       if (!project) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Bot project not found' });
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Bot project not found',
+        });
       }
 
       return project.botConfig;
     }),
 
   updateBotConfig: protectedProcedure
-    .input(z.object({
-      projectId: z.string(),
-      token: z.string().optional(),
-      webhookUrl: z.string().optional(),
-      parseMode: z.enum(['HTML', 'Markdown', 'MarkdownV2']).optional(),
-      disableWebPagePreview: z.boolean().optional(),
-    }))
+    .input(
+      z.object({
+        projectId: z.string(),
+        token: z.string().optional(),
+        webhookUrl: z.string().optional(),
+        parseMode: z.enum(['HTML', 'Markdown', 'MarkdownV2']).optional(),
+        disableWebPagePreview: z.boolean().optional(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       const project = await prisma.project.findFirst({
         where: {
@@ -378,7 +514,10 @@ export const projectRouter = createTRPCRouter({
       });
 
       if (!project) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Bot project not found' });
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Bot project not found',
+        });
       }
 
       const { projectId, ...data } = input;
@@ -408,7 +547,10 @@ export const projectRouter = createTRPCRouter({
       });
 
       if (!project) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Project not found' });
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Project not found',
+        });
       }
 
       return prisma.codeArtifact.findMany({
@@ -428,7 +570,10 @@ export const projectRouter = createTRPCRouter({
       });
 
       if (!project) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Project not found' });
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Project not found',
+        });
       }
 
       return prisma.codeArtifact.findUnique({

@@ -1,8 +1,8 @@
 'use client';
-import type { AnchorHTMLAttributes, ReactNode } from 'react';
-import { motion } from 'motion/react';
 import type { Transition } from 'motion/react';
+import { motion } from 'motion/react';
 import Image from 'next/image';
+import type { AnchorHTMLAttributes, ReactNode } from 'react';
 
 const transition: Transition = {
   type: 'spring',

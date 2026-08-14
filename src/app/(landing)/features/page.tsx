@@ -1,45 +1,49 @@
 'use client';
 
-import { motion, AnimatePresence } from 'motion/react';
-import { useState, useEffect } from 'react';
-import { 
-  LayoutGrid, 
-  Workflow, 
-  Database, 
-  Globe, 
-  Zap, 
-  Shield,
-  Sparkles,
-  Bot,
-  Code2,
-  Cloud,
-  Lock,
-  Gauge,
+import {
   ArrowRight,
+  Bot,
+  Braces,
   Check,
-  Play,
-  Layers,
-  Terminal,
-  GitBranch,
+  Cloud,
+  Code2,
   Cpu,
-  Users,
-  Server,
-  Wifi,
-  MousePointer2,
-  Type,
-  Image,
-  Table,
-  Send,
+  Database,
   Eye,
   EyeOff,
-  Key,
   FileCode,
-  Braces,
-  Webhook
+  Gauge,
+  GitBranch,
+  Globe,
+  Image,
+  Key,
+  Layers,
+  LayoutGrid,
+  Lock,
+  MousePointer2,
+  Play,
+  Send,
+  Server,
+  Shield,
+  Sparkles,
+  Table,
+  Terminal,
+  Type,
+  Users,
+  Webhook,
+  Wifi,
+  Workflow,
+  Zap,
 } from 'lucide-react';
+import { AnimatePresence, motion } from 'motion/react';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import {
+  ContentPageBackground,
+  FeaturesBackground,
+} from '@/components/ui/backgrounds';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { FeaturesBackground, ContentPageBackground } from '@/components/ui/backgrounds';
 
 // ==================== MEANINGFUL ANIMATION COMPONENTS ====================
 
@@ -50,7 +54,7 @@ function BuilderAnimation({ color }: { color: string }) {
     { id: 2, type: 'text', x: 10, y: 45, w: 90, h: 20 },
     { id: 3, type: 'button', x: 110, y: 45, w: 40, h: 20 },
   ]);
-  
+
   const [draggedId, setDraggedId] = useState<number | null>(null);
   const [sidebarHover, setSidebarHover] = useState<string | null>(null);
 
@@ -59,9 +63,9 @@ function BuilderAnimation({ color }: { color: string }) {
       // Simulate dragging
       setDraggedId(2);
       setTimeout(() => {
-        setComponents(prev => prev.map(c => 
-          c.id === 2 ? { ...c, y: 75 } : c
-        ));
+        setComponents((prev) =>
+          prev.map((c) => (c.id === 2 ? { ...c, y: 75 } : c)),
+        );
         setTimeout(() => setDraggedId(null), 500);
       }, 800);
     }, 3000);
@@ -81,51 +85,85 @@ function BuilderAnimation({ color }: { color: string }) {
             whileHover={{ scale: 1.1, backgroundColor: `${color}40` }}
           >
             {type === 'header' && <Type className="w-4 h-4 text-white/60" />}
-            {type === 'text' && <span className="text-[8px] text-white/60">T</span>}
-            {type === 'button' && <div className="w-4 h-2 rounded-sm bg-white/60" />}
+            {type === 'text' && (
+              <span className="text-[8px] text-white/60">T</span>
+            )}
+            {type === 'button' && (
+              <div className="w-4 h-2 rounded-sm bg-white/60" />
+            )}
             {type === 'image' && <Image className="w-4 h-4 text-white/60" />}
           </motion.div>
         ))}
       </div>
-      
+
       {/* Canvas */}
       <div className="flex-1 p-3 relative bg-black/20">
         <div className="absolute top-2 right-2 flex gap-1">
-          <div className="w-16 h-4 rounded bg-white/10 flex items-center justify-center text-[6px] text-white/40">Desktop</div>
-          <div className="w-12 h-4 rounded bg-white/5 flex items-center justify-center text-[6px] text-white/30">Mobile</div>
+          <div className="w-16 h-4 rounded bg-white/10 flex items-center justify-center text-[6px] text-white/40">
+            Desktop
+          </div>
+          <div className="w-12 h-4 rounded bg-white/5 flex items-center justify-center text-[6px] text-white/30">
+            Mobile
+          </div>
         </div>
-        
+
         {components.map((comp) => (
           <motion.div
             key={comp.id}
             className={cn(
-              "absolute rounded border-2 flex items-center justify-center",
-              draggedId === comp.id ? "border-primary z-10 shadow-lg" : "border-white/20"
+              'absolute rounded border-2 flex items-center justify-center',
+              draggedId === comp.id
+                ? 'border-primary z-10 shadow-lg'
+                : 'border-white/20',
             )}
             style={{
               left: comp.x,
               top: comp.y,
               width: comp.w,
               height: comp.h,
-              backgroundColor: draggedId === comp.id ? `${color}30` : 'rgba(255,255,255,0.05)',
+              backgroundColor:
+                draggedId === comp.id ? `${color}30` : 'rgba(255,255,255,0.05)',
             }}
-            animate={draggedId === comp.id ? { 
-              scale: [1, 1.05, 1],
-              boxShadow: [`0 0 0 ${color}00`, `0 0 20px ${color}60`, `0 0 0 ${color}00`]
-            } : {}}
+            animate={
+              draggedId === comp.id
+                ? {
+                    scale: [1, 1.05, 1],
+                    boxShadow: [
+                      `0 0 0 ${color}00`,
+                      `0 0 20px ${color}60`,
+                      `0 0 0 ${color}00`,
+                    ],
+                  }
+                : {}
+            }
             transition={{ duration: 0.5 }}
           >
-            {comp.type === 'header' && <div className="w-3/4 h-2 rounded-full bg-white/40" />}
-            {comp.type === 'text' && <div className="w-full px-1 space-y-1"><div className="h-1.5 rounded-full bg-white/30 w-full" /><div className="h-1.5 rounded-full bg-white/30 w-2/3" /></div>}
-            {comp.type === 'button' && <div className="px-2 py-0.5 rounded bg-white/30 text-[6px] text-white">Click</div>}
+            {comp.type === 'header' && (
+              <div className="w-3/4 h-2 rounded-full bg-white/40" />
+            )}
+            {comp.type === 'text' && (
+              <div className="w-full px-1 space-y-1">
+                <div className="h-1.5 rounded-full bg-white/30 w-full" />
+                <div className="h-1.5 rounded-full bg-white/30 w-2/3" />
+              </div>
+            )}
+            {comp.type === 'button' && (
+              <div className="px-2 py-0.5 rounded bg-white/30 text-[6px] text-white">
+                Click
+              </div>
+            )}
           </motion.div>
         ))}
-        
+
         {/* Grid lines */}
-        <div className="absolute inset-0 opacity-10" style={{
-          backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)',
-          backgroundSize: '20px 20px'
-        }} />
+        <div
+          className="absolute inset-0 opacity-10"
+          style={{
+            backgroundImage:
+              'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)',
+            backgroundSize: '20px 20px',
+          }}
+        />
       </div>
     </div>
   );
@@ -135,14 +173,21 @@ function BuilderAnimation({ color }: { color: string }) {
 function WorkflowAnimation({ color }: { color: string }) {
   const [activeNode, setActiveNode] = useState(0);
   const [running, setRunning] = useState(true);
-  
+
   const nodes = [
     { id: 0, type: 'trigger', label: 'New User', icon: Users, x: 20, y: 50 },
     { id: 1, type: 'condition', label: 'Check Plan', icon: Eye, x: 70, y: 50 },
     { id: 2, type: 'action', label: 'Send Email', icon: Send, x: 120, y: 30 },
-    { id: 3, type: 'action', label: 'Create DB', icon: Database, x: 120, y: 70 },
+    {
+      id: 3,
+      type: 'action',
+      label: 'Create DB',
+      icon: Database,
+      x: 120,
+      y: 70,
+    },
   ];
-  
+
   const connections = [
     { from: 0, to: 1 },
     { from: 1, to: 2, label: 'Pro' },
@@ -152,7 +197,7 @@ function WorkflowAnimation({ color }: { color: string }) {
   useEffect(() => {
     if (!running) return;
     const interval = setInterval(() => {
-      setActiveNode(prev => (prev + 1) % 4);
+      setActiveNode((prev) => (prev + 1) % 4);
     }, 1500);
     return () => clearInterval(interval);
   }, [running]);
@@ -165,7 +210,7 @@ function WorkflowAnimation({ color }: { color: string }) {
           const fromNode = nodes[conn.from];
           const toNode = nodes[conn.to];
           const isActive = activeNode === conn.from;
-          
+
           return (
             <g key={i}>
               <motion.path
@@ -174,32 +219,48 @@ function WorkflowAnimation({ color }: { color: string }) {
                 stroke={isActive ? color : 'rgba(255,255,255,0.2)'}
                 strokeWidth="2"
                 markerEnd="url(#arrowhead)"
-                animate={isActive ? { 
-                  strokeDasharray: ['0,10', '10,0'],
-                } : {}}
+                animate={
+                  isActive
+                    ? {
+                        strokeDasharray: ['0,10', '10,0'],
+                      }
+                    : {}
+                }
                 transition={{ duration: 0.5 }}
               />
               {conn.label && (
-                <text x={(fromNode.x + toNode.x) / 2} y={(fromNode.y + toNode.y) / 2 - 5} 
-                      fill="rgba(255,255,255,0.4)" fontSize="6" textAnchor="middle">
+                <text
+                  x={(fromNode.x + toNode.x) / 2}
+                  y={(fromNode.y + toNode.y) / 2 - 5}
+                  fill="rgba(255,255,255,0.4)"
+                  fontSize="6"
+                  textAnchor="middle"
+                >
                   {conn.label}
                 </text>
               )}
             </g>
           );
         })}
-        
+
         <defs>
-          <marker id="arrowhead" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+          <marker
+            id="arrowhead"
+            markerWidth="6"
+            markerHeight="6"
+            refX="5"
+            refY="3"
+            orient="auto"
+          >
             <polygon points="0 0, 6 3, 0 6" fill={color} />
           </marker>
         </defs>
-        
+
         {/* Nodes */}
         {nodes.map((node) => {
           const Icon = node.icon;
           const isActive = activeNode === node.id;
-          
+
           return (
             <motion.g key={node.id}>
               <motion.rect
@@ -211,25 +272,55 @@ function WorkflowAnimation({ color }: { color: string }) {
                 fill={isActive ? `${color}40` : 'rgba(255,255,255,0.05)'}
                 stroke={isActive ? color : 'rgba(255,255,255,0.2)'}
                 strokeWidth="1"
-                animate={isActive ? { 
-                  scale: [1, 1.1, 1],
-                  filter: [`drop-shadow(0 0 0 ${color}00)`, `drop-shadow(0 0 8px ${color}80)`, `drop-shadow(0 0 0 ${color}00)`]
-                } : {}}
+                animate={
+                  isActive
+                    ? {
+                        scale: [1, 1.1, 1],
+                        filter: [
+                          `drop-shadow(0 0 0 ${color}00)`,
+                          `drop-shadow(0 0 8px ${color}80)`,
+                          `drop-shadow(0 0 0 ${color}00)`,
+                        ],
+                      }
+                    : {}
+                }
                 transition={{ duration: 0.5 }}
               />
-              <foreignObject x={node.x - 8} y={node.y - 8} width="16" height="16">
-                <Icon className="w-4 h-4" style={{ color: isActive ? 'white' : 'rgba(255,255,255,0.5)' }} />
+              <foreignObject
+                x={node.x - 8}
+                y={node.y - 8}
+                width="16"
+                height="16"
+              >
+                <Icon
+                  className="w-4 h-4"
+                  style={{
+                    color: isActive ? 'white' : 'rgba(255,255,255,0.5)',
+                  }}
+                />
               </foreignObject>
-              <text x={node.x} y={node.y + 20} fill="rgba(255,255,255,0.5)" fontSize="5" textAnchor="middle">
+              <text
+                x={node.x}
+                y={node.y + 20}
+                fill="rgba(255,255,255,0.5)"
+                fontSize="5"
+                textAnchor="middle"
+              >
                 {node.label}
               </text>
             </motion.g>
           );
         })}
-        
+
         {/* Running indicator */}
         <circle cx="140" cy="10" r="3" fill={running ? '#22c55e' : '#ef4444'} />
-        <text x="130" y="12" fill="rgba(255,255,255,0.4)" fontSize="5" textAnchor="end">
+        <text
+          x="130"
+          y="12"
+          fill="rgba(255,255,255,0.4)"
+          fontSize="5"
+          textAnchor="end"
+        >
           {running ? 'Running' : 'Paused'}
         </text>
       </svg>
@@ -244,13 +335,13 @@ function AIAnimation({ color }: { color: string }) {
     { type: 'ai', text: 'Generating component...', time: 1 },
   ]);
   const [showCode, setShowCode] = useState(false);
-  
+
   const codeLines = [
     '<form className="space-y-4">',
     '  <Input type="email" />',
     '  <Input type="password" />',
     '  <Button>Sign In</Button>',
-    '</form>'
+    '</form>',
   ];
 
   useEffect(() => {
@@ -262,7 +353,10 @@ function AIAnimation({ color }: { color: string }) {
     <div className="absolute inset-0 p-2 flex flex-col">
       {/* Chat header */}
       <div className="flex items-center gap-2 px-2 py-1.5 border-b border-white/10 bg-white/5 rounded-t-lg">
-        <div className="w-4 h-4 rounded-full flex items-center justify-center" style={{ backgroundColor: `${color}40` }}>
+        <div
+          className="w-4 h-4 rounded-full flex items-center justify-center"
+          style={{ backgroundColor: `${color}40` }}
+        >
           <Sparkles className="w-2.5 h-2.5" style={{ color }} />
         </div>
         <span className="text-[8px] text-white/60">AI Assistant</span>
@@ -270,7 +364,7 @@ function AIAnimation({ color }: { color: string }) {
           <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
         </div>
       </div>
-      
+
       {/* Messages */}
       <div className="flex-1 p-2 space-y-2 overflow-hidden">
         {messages.map((msg, i) => (
@@ -279,16 +373,16 @@ function AIAnimation({ color }: { color: string }) {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             className={cn(
-              "text-[8px] p-1.5 rounded-lg max-w-[85%]",
-              msg.type === 'user' 
-                ? 'bg-white/10 ml-auto text-white/80' 
-                : 'bg-white/5 text-white/60'
+              'text-[8px] p-1.5 rounded-lg max-w-[85%]',
+              msg.type === 'user'
+                ? 'bg-white/10 ml-auto text-white/80'
+                : 'bg-white/5 text-white/60',
             )}
           >
             {msg.text}
           </motion.div>
         ))}
-        
+
         {/* Generated code preview */}
         <AnimatePresence>
           {showCode && (
@@ -298,7 +392,9 @@ function AIAnimation({ color }: { color: string }) {
               className="rounded-lg bg-black/40 border border-white/10 p-2 font-mospace"
             >
               <div className="flex items-center justify-between mb-1">
-                <span className="text-[6px] text-white/40">Generated Component</span>
+                <span className="text-[6px] text-white/40">
+                  Generated Component
+                </span>
                 <div className="flex gap-1">
                   <div className="w-2 h-2 rounded-full bg-red-500/50" />
                   <div className="w-2 h-2 rounded-full bg-yellow-500/50" />
@@ -322,12 +418,12 @@ function AIAnimation({ color }: { color: string }) {
           )}
         </AnimatePresence>
       </div>
-      
+
       {/* Input */}
       <div className="p-1.5 border-t border-white/10">
         <div className="h-5 rounded bg-white/5 border border-white/10 flex items-center px-2">
           <span className="text-[8px] text-white/30">Type a message...</span>
-          <motion.div 
+          <motion.div
             className="w-0.5 h-3 bg-white/40 ml-0.5"
             animate={{ opacity: [1, 0, 1] }}
             transition={{ duration: 1, repeat: Infinity }}
@@ -340,7 +436,9 @@ function AIAnimation({ color }: { color: string }) {
 
 // 4. Database - Real schema editor
 function DatabaseAnimation({ color }: { color: string }) {
-  const [activeTable, setActiveTable] = useState<'users' | 'posts' | null>(null);
+  const [activeTable, setActiveTable] = useState<'users' | 'posts' | null>(
+    null,
+  );
   const [highlightedRelation, setHighlightedRelation] = useState(false);
 
   useEffect(() => {
@@ -365,23 +463,39 @@ function DatabaseAnimation({ color }: { color: string }) {
       {/* Users Table */}
       <motion.div
         className={cn(
-          "absolute left-2 top-4 w-20 rounded-lg border overflow-hidden",
-          activeTable === 'users' ? "border-primary" : "border-white/20"
+          'absolute left-2 top-4 w-20 rounded-lg border overflow-hidden',
+          activeTable === 'users' ? 'border-primary' : 'border-white/20',
         )}
-        animate={activeTable === 'users' ? { 
-          boxShadow: [`0 0 0 ${color}00`, `0 0 15px ${color}60`, `0 0 0 ${color}00`],
-          scale: [1, 1.02, 1]
-        } : {}}
+        animate={
+          activeTable === 'users'
+            ? {
+                boxShadow: [
+                  `0 0 0 ${color}00`,
+                  `0 0 15px ${color}60`,
+                  `0 0 0 ${color}00`,
+                ],
+                scale: [1, 1.02, 1],
+              }
+            : {}
+        }
         transition={{ duration: 0.5 }}
       >
-        <div className="h-5 flex items-center px-2 gap-1.5" style={{ backgroundColor: `${color}30` }}>
+        <div
+          className="h-5 flex items-center px-2 gap-1.5"
+          style={{ backgroundColor: `${color}30` }}
+        >
           <Table className="w-3 h-3 text-white/80" />
           <span className="text-[8px] font-medium text-white">users</span>
         </div>
         <div className="p-1.5 space-y-1">
           {['id', 'email', 'name', 'plan'].map((col, i) => (
             <div key={col} className="flex items-center gap-1.5">
-              <Key className={cn("w-2.5 h-2.5", i === 0 ? "text-yellow-500" : "text-white/30")} />
+              <Key
+                className={cn(
+                  'w-2.5 h-2.5',
+                  i === 0 ? 'text-yellow-500' : 'text-white/30',
+                )}
+              />
               <span className="text-[7px] text-white/60">{col}</span>
             </div>
           ))}
@@ -391,23 +505,43 @@ function DatabaseAnimation({ color }: { color: string }) {
       {/* Posts Table */}
       <motion.div
         className={cn(
-          "absolute right-2 top-12 w-20 rounded-lg border overflow-hidden",
-          activeTable === 'posts' ? "border-primary" : "border-white/20"
+          'absolute right-2 top-12 w-20 rounded-lg border overflow-hidden',
+          activeTable === 'posts' ? 'border-primary' : 'border-white/20',
         )}
-        animate={activeTable === 'posts' ? { 
-          boxShadow: [`0 0 0 ${color}00`, `0 0 15px ${color}60`, `0 0 0 ${color}00`],
-          scale: [1, 1.02, 1]
-        } : {}}
+        animate={
+          activeTable === 'posts'
+            ? {
+                boxShadow: [
+                  `0 0 0 ${color}00`,
+                  `0 0 15px ${color}60`,
+                  `0 0 0 ${color}00`,
+                ],
+                scale: [1, 1.02, 1],
+              }
+            : {}
+        }
         transition={{ duration: 0.5 }}
       >
-        <div className="h-5 flex items-center px-2 gap-1.5" style={{ backgroundColor: `${color}30` }}>
+        <div
+          className="h-5 flex items-center px-2 gap-1.5"
+          style={{ backgroundColor: `${color}30` }}
+        >
           <Table className="w-3 h-3 text-white/80" />
           <span className="text-[8px] font-medium text-white">posts</span>
         </div>
         <div className="p-1.5 space-y-1">
           {['id', 'title', 'user_id', 'status'].map((col, i) => (
             <div key={col} className="flex items-center gap-1.5">
-              <Key className={cn("w-2.5 h-2.5", i === 0 ? "text-yellow-500" : i === 2 ? "text-blue-400" : "text-white/30")} />
+              <Key
+                className={cn(
+                  'w-2.5 h-2.5',
+                  i === 0
+                    ? 'text-yellow-500'
+                    : i === 2
+                      ? 'text-blue-400'
+                      : 'text-white/30',
+                )}
+              />
               <span className="text-[7px] text-white/60">{col}</span>
             </div>
           ))}
@@ -423,13 +557,28 @@ function DatabaseAnimation({ color }: { color: string }) {
           strokeWidth="2"
           strokeDasharray="4,2"
           markerEnd="url(#arrow)"
-          animate={highlightedRelation ? {
-            strokeDashoffset: [0, -12]
-          } : {}}
-          transition={{ duration: 1, repeat: highlightedRelation ? Infinity : 0, ease: "linear" }}
+          animate={
+            highlightedRelation
+              ? {
+                  strokeDashoffset: [0, -12],
+                }
+              : {}
+          }
+          transition={{
+            duration: 1,
+            repeat: highlightedRelation ? Infinity : 0,
+            ease: 'linear',
+          }}
         />
         <defs>
-          <marker id="arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+          <marker
+            id="arrow"
+            markerWidth="6"
+            markerHeight="6"
+            refX="5"
+            refY="3"
+            orient="auto"
+          >
             <polygon points="0 0, 6 3, 0 6" fill={color} />
           </marker>
         </defs>
@@ -452,18 +601,18 @@ function APIAnimation({ color }: { color: string }) {
     const interval = setInterval(() => {
       setStatus('loading');
       setResponseTime(0);
-      
+
       const timer = setInterval(() => {
-        setResponseTime(t => t + 12);
+        setResponseTime((t) => t + 12);
       }, 10);
-      
+
       setTimeout(() => {
         clearInterval(timer);
         setStatus('success');
         setTimeout(() => setStatus('idle'), 2000);
       }, 600);
     }, 4000);
-    
+
     return () => clearInterval(interval);
   }, []);
 
@@ -493,10 +642,13 @@ function APIAnimation({ color }: { color: string }) {
         {/* Headers tabs */}
         <div className="flex gap-1 border-b border-white/10 pb-1">
           {['Params', 'Headers', 'Body'].map((tab, i) => (
-            <button key={tab} className={cn(
-              "px-2 py-0.5 rounded text-[7px]",
-              i === 0 ? "bg-white/10 text-white" : "text-white/40"
-            )}>
+            <button
+              key={tab}
+              className={cn(
+                'px-2 py-0.5 rounded text-[7px]',
+                i === 0 ? 'bg-white/10 text-white' : 'text-white/40',
+              )}
+            >
               {tab}
             </button>
           ))}
@@ -524,7 +676,7 @@ function APIAnimation({ color }: { color: string }) {
               <motion.div
                 className="w-3 h-3 border-2 border-white/20 border-t-primary rounded-full"
                 animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
               />
             )}
             {status === 'success' && (
@@ -533,7 +685,7 @@ function APIAnimation({ color }: { color: string }) {
             <span className="text-[7px] text-white/30">{responseTime}ms</span>
           </div>
         </div>
-        
+
         <div className="h-16 rounded bg-black/40 p-1.5 font-mono text-[6px] text-green-400/80 overflow-hidden">
           <div>{`{`}</div>
           <div className="pl-2">&quot;users&quot;: [</div>
@@ -558,7 +710,7 @@ function EdgeAnimation({ color }: { color: string }) {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setActiveRequest(prev => (prev + 1) % locations.length);
+      setActiveRequest((prev) => (prev + 1) % locations.length);
     }, 2000);
     return () => clearInterval(interval);
   }, []);
@@ -602,7 +754,7 @@ function EdgeAnimation({ color }: { color: string }) {
                 />
               </>
             )}
-            
+
             {/* Server node */}
             <motion.circle
               cx={loc.x}
@@ -612,14 +764,23 @@ function EdgeAnimation({ color }: { color: string }) {
               animate={activeRequest === i ? { scale: [1, 1.2, 1] } : {}}
               transition={{ duration: 0.5 }}
             />
-            <Server className="absolute" style={{ 
-              left: `${loc.x - 2}%`, 
-              top: `${loc.y - 2}%`,
-              width: '4%',
-              color: 'white'
-            }} />
-            
-            <text x={loc.x} y={loc.y + 12} fill="rgba(255,255,255,0.5)" fontSize="5" textAnchor="middle">
+            <Server
+              className="absolute"
+              style={{
+                left: `${loc.x - 2}%`,
+                top: `${loc.y - 2}%`,
+                width: '4%',
+                color: 'white',
+              }}
+            />
+
+            <text
+              x={loc.x}
+              y={loc.y + 12}
+              fill="rgba(255,255,255,0.5)"
+              fontSize="5"
+              textAnchor="middle"
+            >
               {loc.city}
             </text>
           </g>
@@ -631,15 +792,17 @@ function EdgeAnimation({ color }: { color: string }) {
           fill={color}
           animate={{
             cx: [25, 48, 75, 85, 25],
-            cy: [35, 30, 50, 65, 35]
+            cy: [35, 30, 50, 65, 35],
           }}
-          transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+          transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
         />
       </svg>
 
       {/* Metrics */}
       <div className="absolute bottom-2 right-2 text-right">
-        <div className="text-[10px] font-bold" style={{ color }}>23ms</div>
+        <div className="text-[10px] font-bold" style={{ color }}>
+          23ms
+        </div>
         <div className="text-[6px] text-white/40">latency</div>
       </div>
     </div>
@@ -671,9 +834,13 @@ function SecurityAnimation({ color }: { color: string }) {
         {/* Data packet */}
         <motion.div
           className="w-full max-w-[120px] rounded-lg border border-white/20 bg-white/5 p-3 relative overflow-hidden"
-          animate={encrypting ? {
-            borderColor: [color, 'rgba(255,255,255,0.2)'],
-          } : {}}
+          animate={
+            encrypting
+              ? {
+                  borderColor: [color, 'rgba(255,255,255,0.2)'],
+                }
+              : {}
+          }
           transition={{ duration: 0.5 }}
         >
           {/* Lock icon overlay */}
@@ -694,7 +861,7 @@ function SecurityAnimation({ color }: { color: string }) {
             <Key className="w-3 h-3 text-white/40" />
             <span className="text-[8px] text-white/40">Sensitive Data</span>
           </div>
-          
+
           <div className="font-mono text-[10px] text-white/80 truncate">
             {data}
           </div>
@@ -704,7 +871,9 @@ function SecurityAnimation({ color }: { color: string }) {
               <motion.div
                 className="h-full rounded-full"
                 style={{ backgroundColor: color }}
-                animate={encrypting ? { width: ['0%', '100%'] } : { width: '100%' }}
+                animate={
+                  encrypting ? { width: ['0%', '100%'] } : { width: '100%' }
+                }
                 transition={{ duration: 1 }}
               />
             </div>
@@ -718,13 +887,23 @@ function SecurityAnimation({ color }: { color: string }) {
         <motion.div
           className="mt-4 flex items-center gap-2 px-3 py-1.5 rounded-full border"
           style={{ borderColor: `${color}40`, backgroundColor: `${color}10` }}
-          animate={encrypting ? {
-            boxShadow: [`0 0 0 ${color}00`, `0 0 20px ${color}40`, `0 0 0 ${color}00`]
-          } : {}}
+          animate={
+            encrypting
+              ? {
+                  boxShadow: [
+                    `0 0 0 ${color}00`,
+                    `0 0 20px ${color}40`,
+                    `0 0 0 ${color}00`,
+                  ],
+                }
+              : {}
+          }
           transition={{ duration: 1 }}
         >
           <Shield className="w-3 h-3" style={{ color }} />
-          <span className="text-[8px] font-medium" style={{ color }}>TLS 1.3 Active</span>
+          <span className="text-[8px] font-medium" style={{ color }}>
+            TLS 1.3 Active
+          </span>
         </motion.div>
       </div>
     </div>
@@ -757,18 +936,18 @@ function CollaborationAnimation({ color }: { color: string }) {
             className="absolute"
             animate={{
               x: [cursor.x, cursor.x + 20, cursor.x],
-              y: [cursor.y, cursor.y + 10, cursor.y]
+              y: [cursor.y, cursor.y + 10, cursor.y],
             }}
             transition={{
               duration: 4 + cursor.id,
               repeat: Infinity,
-              repeatType: "reverse"
+              repeatType: 'reverse',
             }}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill={cursor.color}>
-              <path d="M5.5 3.21V20.8c0 .45.54.67.85.35l4.86-4.86a.5.5 0 0 1 .35-.15h6.87a.5.5 0 0 0 .35-.85L6.35 2.85a.5.5 0 0 0-.85.35Z"/>
+              <path d="M5.5 3.21V20.8c0 .45.54.67.85.35l4.86-4.86a.5.5 0 0 1 .35-.15h6.87a.5.5 0 0 0 .35-.85L6.35 2.85a.5.5 0 0 0-.85.35Z" />
             </svg>
-            <div 
+            <div
               className="absolute -top-4 left-3 px-1.5 py-0.5 rounded text-[6px] font-medium text-white"
               style={{ backgroundColor: cursor.color }}
             >
@@ -805,7 +984,8 @@ const features = [
   {
     id: 'builder',
     title: 'Визуальный конструктор',
-    description: 'Создавайте интерфейсы методом drag-and-drop. Более 50 готовых компонентов, которые автоматически адаптируются под любые устройства.',
+    description:
+      'Создавайте интерфейсы методом drag-and-drop. Более 50 готовых компонентов, которые автоматически адаптируются под любые устройства.',
     icon: LayoutGrid,
     color: '#3b82f6',
     gradient: 'from-blue-500/20 to-cyan-500/20',
@@ -823,7 +1003,8 @@ const features = [
   {
     id: 'workflow',
     title: 'Автоматизация процессов',
-    description: 'Визуальный редактор бизнес-процессов. Соединяйте триггеры, условия и действия в мощные workflows без написания кода.',
+    description:
+      'Визуальный редактор бизнес-процессов. Соединяйте триггеры, условия и действия в мощные workflows без написания кода.',
     icon: Workflow,
     color: '#84cc16',
     gradient: 'from-lime-500/20 to-green-500/20',
@@ -841,7 +1022,8 @@ const features = [
   {
     id: 'ai',
     title: 'AI Помощник',
-    description: 'Встроенный искусственный интеллект помогает генерировать код, создавать контент, анализировать данные и отвечать на вопросы пользователей.',
+    description:
+      'Встроенный искусственный интеллект помогает генерировать код, создавать контент, анализировать данные и отвечать на вопросы пользователей.',
     icon: Bot,
     color: '#ec4899',
     gradient: 'from-pink-500/20 to-rose-500/20',
@@ -859,7 +1041,8 @@ const features = [
   {
     id: 'database',
     title: 'Визуальная база данных',
-    description: 'Создавайте схемы данных, связи и индексы через графический интерфейс. Автоматические миграции и GraphQL API из коробки.',
+    description:
+      'Создавайте схемы данных, связи и индексы через графический интерфейс. Автоматические миграции и GraphQL API из коробки.',
     icon: Database,
     color: '#8b5cf6',
     gradient: 'from-violet-500/20 to-purple-500/20',
@@ -877,7 +1060,8 @@ const features = [
   {
     id: 'api',
     title: 'API Конструктор',
-    description: 'Создавайте REST и GraphQL endpoints без кода. Автоматическая документация Swagger, аутентификация и rate limiting.',
+    description:
+      'Создавайте REST и GraphQL endpoints без кода. Автоматическая документация Swagger, аутентификация и rate limiting.',
     icon: Globe,
     color: '#f59e0b',
     gradient: 'from-orange-500/20 to-amber-500/20',
@@ -895,7 +1079,8 @@ const features = [
   {
     id: 'edge',
     title: 'Edge Runtime',
-    description: 'Приложения запускаются на 100+ edge-локациях по всему миру. Минимальная задержка и максимальная производительность.',
+    description:
+      'Приложения запускаются на 100+ edge-локациях по всему миру. Минимальная задержка и максимальная производительность.',
     icon: Zap,
     color: '#06b6d4',
     gradient: 'from-cyan-500/20 to-teal-500/20',
@@ -913,7 +1098,8 @@ const features = [
   {
     id: 'security',
     title: 'Enterprise Security',
-    description: 'Банковский уровень безопасности с SSO, 2FA, audit logs и полным шифрованием данных в покое и при передаче.',
+    description:
+      'Банковский уровень безопасности с SSO, 2FA, audit logs и полным шифрованием данных в покое и при передаче.',
     icon: Shield,
     color: '#ef4444',
     gradient: 'from-red-500/20 to-orange-500/20',
@@ -931,7 +1117,8 @@ const features = [
   {
     id: 'collaboration',
     title: 'Командная работа',
-    description: 'Работайте вместе с командой в реальном времени. Git-интеграция, code review, комментарии и совместное редактирование.',
+    description:
+      'Работайте вместе с командой в реальном времени. Git-интеграция, code review, комментарии и совместное редактирование.',
     icon: Code2,
     color: '#10b981',
     gradient: 'from-emerald-500/20 to-green-500/20',
@@ -949,14 +1136,28 @@ const features = [
 ];
 
 const comparisons = [
-  { feature: 'Время разработки', traditional: '3-6 месяцев', shakel: '1-2 недели' },
+  {
+    feature: 'Время разработки',
+    traditional: '3-6 месяцев',
+    shakel: '1-2 недели',
+  },
   { feature: 'Стоимость запуска', traditional: '$50K-200K', shakel: 'От $0' },
-  { feature: 'Нужны разработчики', traditional: 'Команда 3-5 чел', shakel: '1 человек' },
+  {
+    feature: 'Нужны разработчики',
+    traditional: 'Команда 3-5 чел',
+    shakel: '1 человек',
+  },
   { feature: 'Обновления', traditional: 'Недели', shakel: 'Минуты' },
   { feature: 'Масштабирование', traditional: 'Сложно', shakel: 'Авто' },
 ];
 
-function FeatureCard({ feature, index }: { feature: typeof features[0]; index: number }) {
+function FeatureCard({
+  feature,
+  index,
+}: {
+  feature: (typeof features)[0];
+  index: number;
+}) {
   const [isHovered, setIsHovered] = useState(false);
   const Animation = feature.Animation;
 
@@ -971,25 +1172,33 @@ function FeatureCard({ feature, index }: { feature: typeof features[0]; index: n
       className="group relative rounded-2xl border border-white/5 bg-white/[0.02] backdrop-blur-sm overflow-hidden transition-all duration-500 hover:border-primary/30 hover:bg-white/[0.04] hover:-translate-y-1"
     >
       {/* Gradient background */}
-      <div className={cn(
-        'absolute inset-0 bg-gradient-to-br opacity-0 transition-opacity duration-500',
-        feature.gradient,
-        isHovered && 'opacity-20'
-      )} />
+      <div
+        className={cn(
+          'absolute inset-0 bg-gradient-to-br opacity-0 transition-opacity duration-500',
+          feature.gradient,
+          isHovered && 'opacity-20',
+        )}
+      />
 
       <div className="relative p-8">
         {/* Header */}
         <div className="flex items-start justify-between mb-6">
-          <div 
+          <div
             className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-300 group-hover:scale-110"
             style={{ backgroundColor: `${feature.color}15` }}
           >
-            <feature.icon className="w-7 h-7" style={{ color: feature.color }} />
+            <feature.icon
+              className="w-7 h-7"
+              style={{ color: feature.color }}
+            />
           </div>
-          
+
           {/* Stats badge */}
           <div className="text-right">
-            <div className="text-2xl font-bold" style={{ color: feature.color }}>
+            <div
+              className="text-2xl font-bold"
+              style={{ color: feature.color }}
+            >
               {feature.stats.value}
             </div>
             <div className="text-xs text-white/40">{feature.stats.label}</div>
@@ -997,11 +1206,11 @@ function FeatureCard({ feature, index }: { feature: typeof features[0]; index: n
         </div>
 
         {/* Animation Container */}
-        <div 
+        <div
           className="relative h-[160px] rounded-xl border border-white/5 bg-black/30 mb-6 overflow-hidden"
-          style={{ 
+          style={{
             boxShadow: isHovered ? `inset 0 0 40px ${feature.color}15` : 'none',
-            transition: 'box-shadow 0.5s'
+            transition: 'box-shadow 0.5s',
           }}
         >
           <Animation color={feature.color} />
@@ -1056,27 +1265,33 @@ export default function FeaturesPage() {
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-8"
             >
               <Layers className="w-4 h-4 text-primary" />
-              <span className="text-sm font-medium text-white/80">Возможности платформы</span>
+              <span className="text-sm font-medium text-white/80">
+                Возможности платформы
+              </span>
             </motion.div>
 
             <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 tracking-tight">
-              Всё, что нужно для{' '}
-              <span className="text-gradient">создания</span>
+              Всё, что нужно для <span className="text-gradient">создания</span>
             </h1>
             <p className="text-xl text-white/50 max-w-2xl mx-auto mb-10">
-              Полный стек технологий для разработки, развёртывания и масштабирования 
-              современных веб-приложений без написания кода.
+              Полный стек технологий для разработки, развёртывания и
+              масштабирования современных веб-приложений без написания кода.
             </p>
 
             <div className="flex flex-wrap justify-center gap-4">
               <Button variant="gradient" size="lg" className="px-8" asChild>
-                <a href="/register">Начать бесплатно</a>
+                <Link href="/signup">Начать бесплатно</Link>
               </Button>
-              <Button variant="outline" size="lg" className="px-8 border-white/20 text-white hover:bg-white/10" asChild>
-                <a href="#demo" className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="lg"
+                className="px-8 border-white/20 text-white hover:bg-white/10"
+                asChild
+              >
+                <Link href="/projects/new" className="flex items-center gap-2">
                   <Play className="w-4 h-4" />
-                  Смотреть демо
-                </a>
+                  Создать проект
+                </Link>
               </Button>
             </div>
           </motion.div>
@@ -1104,7 +1319,8 @@ export default function FeaturesPage() {
             className="max-w-4xl mx-auto"
           >
             <h2 className="text-3xl font-bold text-white text-center mb-12">
-              Shakel против <span className="text-white/40">традиционной разработки</span>
+              Shakel против{' '}
+              <span className="text-white/40">традиционной разработки</span>
             </h2>
 
             <div className="rounded-2xl border border-white/10 bg-white/[0.02] overflow-hidden">
@@ -1117,11 +1333,14 @@ export default function FeaturesPage() {
                   transition={{ delay: index * 0.1 }}
                   className={cn(
                     'grid grid-cols-3 gap-4 p-6 items-center',
-                    index !== comparisons.length - 1 && 'border-b border-white/5'
+                    index !== comparisons.length - 1 &&
+                      'border-b border-white/5',
                   )}
                 >
                   <span className="text-white font-medium">{item.feature}</span>
-                  <span className="text-white/40 text-center">{item.traditional}</span>
+                  <span className="text-white/40 text-center">
+                    {item.traditional}
+                  </span>
                   <span className="text-primary font-semibold text-center flex items-center justify-center gap-2">
                     <Check className="w-4 h-4" />
                     {item.shakel}
@@ -1142,8 +1361,12 @@ export default function FeaturesPage() {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-3xl font-bold text-white mb-4">Современный стек технологий</h2>
-            <p className="text-white/50">Мы используем лучшие технологии мира</p>
+            <h2 className="text-3xl font-bold text-white mb-4">
+              Современный стек технологий
+            </h2>
+            <p className="text-white/50">
+              Мы используем лучшие технологии мира
+            </p>
           </motion.div>
 
           <div className="flex flex-wrap justify-center gap-6">
@@ -1163,7 +1386,10 @@ export default function FeaturesPage() {
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.05 }}
-                whileHover={{ scale: 1.05, borderColor: 'rgba(59, 130, 246, 0.3)' }}
+                whileHover={{
+                  scale: 1.05,
+                  borderColor: 'rgba(59, 130, 246, 0.3)',
+                }}
                 className="flex items-center gap-3 px-6 py-4 rounded-xl bg-white/[0.02] border border-white/5 backdrop-blur-sm transition-all"
               >
                 <tech.icon className="w-5 h-5 text-primary" />
@@ -1192,10 +1418,10 @@ export default function FeaturesPage() {
                 Начните бесплатно. Никакой карты не требуется.
               </p>
               <Button variant="gradient" size="lg" className="px-8" asChild>
-                <a href="/register" className="flex items-center gap-2">
+                <Link href="/signup" className="flex items-center gap-2">
                   Создать аккаунт
                   <ArrowRight className="w-4 h-4" />
-                </a>
+                </Link>
               </Button>
             </div>
           </motion.div>

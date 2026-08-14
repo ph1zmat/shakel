@@ -1,8 +1,9 @@
 'use client';
-import { cn } from '@/lib/utils';
-import React, { useState, createContext, useContext } from 'react';
-import { AnimatePresence, motion } from 'motion/react';
 import { IconMenu2, IconX } from '@tabler/icons-react';
+import { AnimatePresence, motion } from 'motion/react';
+import type React from 'react';
+import { createContext, useContext, useState } from 'react';
+import { cn } from '@/lib/utils';
 
 interface Links {
   label: string;
@@ -57,7 +58,7 @@ export const Sidebar = ({
   setOpen,
   animate,
 }: {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   open?: boolean;
   setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
   animate?: boolean;

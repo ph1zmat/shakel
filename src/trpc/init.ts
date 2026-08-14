@@ -1,21 +1,42 @@
 import { initTRPC, TRPCError } from '@trpc/server';
 import { headers } from 'next/headers';
 import { cache } from 'react';
-import superjsom from 'superjson';
+import superjson from 'superjson';
 import { auth } from '@/lib/auth';
 import { polarClient } from '@/lib/polar';
 
-export const createTRPCContext = cache(async () => {
-  return { userId: '1234' };
+// Context для API роутов (Next.js fetch adapter)
+export const createTRPCContext = async ({ req }: { req: Request }) => {
+  // Получаем сессию из заголовков
+  const session = await auth.api.getSession({
+    headers: req.headers,
+  });
+
+  return {
+    auth: session,
+    req,
+  };
+};
+
+// Context для серверных компонентов
+export const createTRPCContextServer = cache(async () => {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  return {
+    auth: session,
+  };
 });
 
 const t = initTRPC.create({
-  transformer: superjsom,
+  transformer: superjson,
 });
 
 export const createTRPCRouter = t.router;
 export const baseProcedure = t.procedure;
 export const createCallerFactory = t.createCallerFactory;
+
 export const protectedProcedure = baseProcedure.use(async ({ ctx, next }) => {
   const session = await auth.api.getSession({
     headers: await headers(),

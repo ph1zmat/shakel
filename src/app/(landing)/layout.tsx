@@ -1,14 +1,14 @@
-import { Footer, Header } from '@/features/landing'
+import { Footer, Header } from '@/features/landing';
 
 export default function LandingLayout({
-	children,
+  children,
 }: {
-	children: React.ReactNode
+  children: React.ReactNode;
 }) {
-	return (
-		<Header>
-			{children}
-			<Footer />
-		</Header>
-	)
+  return (
+    <Header>
+      {children}
+      <Footer />
+    </Header>
+  );
 }

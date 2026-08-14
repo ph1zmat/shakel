@@ -1,22 +1,25 @@
 'use client';
 
-import { motion } from 'motion/react';
-import { useState } from 'react';
-import { 
-  Check, 
-  X, 
-  Sparkles, 
-  Zap, 
-  Building2, 
+import {
   ArrowRight,
+  Building2,
+  Check,
+  Clock,
+  Globe,
   HelpCircle,
   Shield,
-  Clock,
-  Globe
+  Sparkles,
+  X,
+  Zap,
 } from 'lucide-react';
+import { motion } from 'motion/react';
+import { useState } from 'react';
+import {
+  FooterBackground,
+  PricingBackground,
+} from '@/components/ui/backgrounds';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { PricingBackground, FooterBackground } from '@/components/ui/backgrounds';
 
 const plans = [
   {
@@ -90,31 +93,47 @@ const plans = [
 const faqs = [
   {
     question: 'Можно ли изменить тариф позже?',
-    answer: 'Да, вы можете повысить или понизить тариф в любое время. Изменения вступят в силу со следующего платёжного периода.',
+    answer:
+      'Да, вы можете повысить или понизить тариф в любое время. Изменения вступят в силу со следующего платёжного периода.',
   },
   {
     question: 'Есть ли скидка для стартапов?',
-    answer: 'Да! Стартапы могут получить скидку до 90% на первый год через нашу программу Shakel for Startups.',
+    answer:
+      'Да! Стартапы могут получить скидку до 90% на первый год через нашу программу Shakel for Startups.',
   },
   {
     question: 'Что происходит при превышении лимитов?',
-    answer: 'Мы не блокируем сервис. Вы получите уведомление и сможете либо повысить тариф, либо доплатить за перерасход.',
+    answer:
+      'Мы не блокируем сервис. Вы получите уведомление и сможете либо повысить тариф, либо доплатить за перерасход.',
   },
   {
     question: 'Поддерживаете ли вы on-premise?',
-    answer: 'Да, в корпоративном тарифе доступна установка на собственные серверы с полной изоляцией данных.',
+    answer:
+      'Да, в корпоративном тарифе доступна установка на собственные серверы с полной изоляцией данных.',
   },
 ];
 
 const enterpriseFeatures = [
-  { icon: Shield, title: 'SOC 2 Compliance', desc: 'Сертифицированная безопасность' },
+  {
+    icon: Shield,
+    title: 'SOC 2 Compliance',
+    desc: 'Сертифицированная безопасность',
+  },
   { icon: Clock, title: '99.99% SLA', desc: 'Гарантированная доступность' },
   { icon: Globe, title: 'Private Cloud', desc: 'Выделенная инфраструктура' },
 ];
 
-function PricingCard({ plan, isYearly, index }: { plan: typeof plans[0]; isYearly: boolean; index: number }) {
+function PricingCard({
+  plan,
+  isYearly,
+  index,
+}: {
+  plan: (typeof plans)[0];
+  isYearly: boolean;
+  index: number;
+}) {
   const price = isYearly ? plan.price.yearly : plan.price.monthly;
-  
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -123,9 +142,9 @@ function PricingCard({ plan, isYearly, index }: { plan: typeof plans[0]; isYearl
       transition={{ delay: index * 0.1 }}
       className={cn(
         'relative rounded-2xl border backdrop-blur-sm overflow-hidden',
-        plan.popular 
-          ? 'border-primary/50 bg-gradient-to-b from-primary/10 to-transparent scale-105 z-10' 
-          : 'border-white/10 bg-white/[0.02] hover:border-white/20'
+        plan.popular
+          ? 'border-primary/50 bg-gradient-to-b from-primary/10 to-transparent scale-105 z-10'
+          : 'border-white/10 bg-white/[0.02] hover:border-white/20',
       )}
     >
       {/* Popular badge */}
@@ -138,7 +157,7 @@ function PricingCard({ plan, isYearly, index }: { plan: typeof plans[0]; isYearl
       <div className={cn('p-8', plan.popular && 'pt-14')}>
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
-          <div 
+          <div
             className="w-12 h-12 rounded-xl flex items-center justify-center"
             style={{ backgroundColor: `${plan.color}15` }}
           >
@@ -164,11 +183,11 @@ function PricingCard({ plan, isYearly, index }: { plan: typeof plans[0]; isYearl
         </div>
 
         {/* CTA */}
-        <Button 
-          variant={plan.popular ? 'gradient' : 'outline'} 
+        <Button
+          variant={plan.popular ? 'gradient' : 'outline'}
           className={cn(
             'w-full mb-8',
-            !plan.popular && 'border-white/20 text-white hover:bg-white/10'
+            !plan.popular && 'border-white/20 text-white hover:bg-white/10',
           )}
           size="lg"
         >
@@ -177,11 +196,13 @@ function PricingCard({ plan, isYearly, index }: { plan: typeof plans[0]; isYearl
 
         {/* Features */}
         <div className="space-y-4">
-          <p className="text-sm font-medium text-white/60 uppercase tracking-wider">Включено:</p>
+          <p className="text-sm font-medium text-white/60 uppercase tracking-wider">
+            Включено:
+          </p>
           {plan.features.map((feature, i) => (
             <div key={i} className="flex items-center gap-3">
               {feature.included ? (
-                <div 
+                <div
                   className="w-5 h-5 rounded-full flex items-center justify-center"
                   style={{ backgroundColor: `${plan.color}20` }}
                 >
@@ -192,10 +213,12 @@ function PricingCard({ plan, isYearly, index }: { plan: typeof plans[0]; isYearl
                   <X className="w-3 h-3 text-white/20" />
                 </div>
               )}
-              <span className={cn(
-                'text-sm',
-                feature.included ? 'text-white/80' : 'text-white/30'
-              )}>
+              <span
+                className={cn(
+                  'text-sm',
+                  feature.included ? 'text-white/80' : 'text-white/30',
+                )}
+              >
                 {feature.text}
               </span>
             </div>
@@ -230,20 +253,27 @@ export default function PricingPage() {
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-8"
             >
               <Sparkles className="w-4 h-4 text-primary" />
-              <span className="text-sm font-medium text-white/80">Прозрачное ценообразование</span>
+              <span className="text-sm font-medium text-white/80">
+                Прозрачное ценообразование
+              </span>
             </motion.div>
 
             <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 tracking-tight">
               Простая и <span className="text-gradient">честная</span> цена
             </h1>
             <p className="text-xl text-white/50 max-w-2xl mx-auto mb-10">
-              Начните бесплатно, масштабируйтесь по мере роста. 
-              Никаких скрытых платежей.
+              Начните бесплатно, масштабируйтесь по мере роста. Никаких скрытых
+              платежей.
             </p>
 
             {/* Toggle */}
             <div className="flex items-center justify-center gap-4">
-              <span className={cn('text-sm', !isYearly ? 'text-white' : 'text-white/40')}>
+              <span
+                className={cn(
+                  'text-sm',
+                  !isYearly ? 'text-white' : 'text-white/40',
+                )}
+              >
                 Месячно
               </span>
               <button
@@ -256,7 +286,12 @@ export default function PricingPage() {
                   className="w-6 h-6 rounded-full bg-primary"
                 />
               </button>
-              <span className={cn('text-sm', isYearly ? 'text-white' : 'text-white/40')}>
+              <span
+                className={cn(
+                  'text-sm',
+                  isYearly ? 'text-white' : 'text-white/40',
+                )}
+              >
                 Годовой
               </span>
               {isYearly && (
@@ -274,9 +309,9 @@ export default function PricingPage() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-3 gap-8 items-start max-w-6xl mx-auto">
             {plans.map((plan, index) => (
-              <PricingCard 
-                key={plan.id} 
-                plan={plan} 
+              <PricingCard
+                key={plan.id}
+                plan={plan}
                 isYearly={isYearly}
                 index={index}
               />
@@ -295,15 +330,15 @@ export default function PricingPage() {
             className="max-w-4xl mx-auto p-12 rounded-3xl border border-white/10 bg-gradient-to-br from-white/[0.05] to-transparent relative overflow-hidden"
           >
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent" />
-            
+
             <div className="relative z-10 grid md:grid-cols-2 gap-12 items-center">
               <div>
                 <h2 className="text-3xl font-bold text-white mb-4">
                   Enterprise?
                 </h2>
                 <p className="text-white/50 mb-8">
-                  Индивидуальные условия для крупных организаций. 
-                  Dedicated инфраструктура, custom SLA, персональный менеджер.
+                  Индивидуальные условия для крупных организаций. Dedicated
+                  инфраструктура, custom SLA, персональный менеджер.
                 </p>
                 <Button variant="gradient" size="lg" asChild>
                   <a href="/contact" className="flex items-center gap-2">
@@ -327,8 +362,12 @@ export default function PricingPage() {
                       <feature.icon className="w-5 h-5 text-primary" />
                     </div>
                     <div>
-                      <div className="font-medium text-white">{feature.title}</div>
-                      <div className="text-sm text-white/40">{feature.desc}</div>
+                      <div className="font-medium text-white">
+                        {feature.title}
+                      </div>
+                      <div className="text-sm text-white/40">
+                        {feature.desc}
+                      </div>
                     </div>
                   </motion.div>
                 ))}
@@ -365,11 +404,15 @@ export default function PricingPage() {
                     onClick={() => setOpenFaq(openFaq === index ? null : index)}
                     className="w-full flex items-center justify-between p-6 text-left"
                   >
-                    <span className="font-medium text-white">{faq.question}</span>
-                    <HelpCircle className={cn(
-                      'w-5 h-5 text-white/40 transition-transform',
-                      openFaq === index && 'rotate-180'
-                    )} />
+                    <span className="font-medium text-white">
+                      {faq.question}
+                    </span>
+                    <HelpCircle
+                      className={cn(
+                        'w-5 h-5 text-white/40 transition-transform',
+                        openFaq === index && 'rotate-180',
+                      )}
+                    />
                   </button>
                   <motion.div
                     animate={{ height: openFaq === index ? 'auto' : 0 }}

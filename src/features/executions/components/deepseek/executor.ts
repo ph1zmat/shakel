@@ -2,7 +2,7 @@ import { createDeepSeek } from '@ai-sdk/deepseek';
 import { generateText } from 'ai';
 import Handlebars from 'handlebars';
 import { NonRetriableError } from 'inngest';
-import type { NodeExecutor } from '@/fetures/executions/types';
+import type { NodeExecutor } from '@/features/executions/types';
 import { deepseekChannel } from '@/inngest/channels/deepseek';
 import prisma from '@/lib/db';
 import { decrypt } from '@/lib/excryption';

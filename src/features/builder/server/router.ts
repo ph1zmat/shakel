@@ -1,11 +1,17 @@
-import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
-import { createTRPCRouter, protectedProcedure } from '@/trpc/init';
-import prisma from '@/lib/db';
-import { PAGINATION } from '@/config/constants';
-import { getComponentDefinition, validateProps } from '@/lib/codegen/component-registry';
-import { NextJSGenerator, NestJSBotGenerator } from '../../builder/codegen/nextjs-generator';
 import { createHash } from 'crypto';
+import { z } from 'zod';
+import { PAGINATION } from '@/config/constants';
+import {
+  getComponentDefinition,
+  validateProps,
+} from '@/lib/codegen/component-registry';
+import prisma from '@/lib/db';
+import { createTRPCRouter, protectedProcedure } from '@/trpc/init';
+import {
+  NestJSBotGenerator,
+  NextJSGenerator,
+} from '../../builder/codegen/nextjs-generator';
 
 // ========================================
 // Helper Functions
@@ -16,12 +22,16 @@ function hashContent(content: string): string {
 }
 
 function detectArtifactType(filePath: string): string {
-  if (filePath.includes('app/') && filePath.endsWith('page.tsx')) return 'NEXTJS_PAGE';
-  if (filePath.includes('app/') && filePath.endsWith('layout.tsx')) return 'NEXTJS_LAYOUT';
+  if (filePath.includes('app/') && filePath.endsWith('page.tsx'))
+    return 'NEXTJS_PAGE';
+  if (filePath.includes('app/') && filePath.endsWith('layout.tsx'))
+    return 'NEXTJS_LAYOUT';
   if (filePath.endsWith('.css')) return 'CSS_STYLESHEET';
   if (filePath.includes('bot/handlers/')) return 'NESTJS_HANDLER';
-  if (filePath.includes('bot/') && filePath.endsWith('.module.ts')) return 'NESTJS_MODULE';
-  if (filePath.includes('bot/') && filePath.endsWith('.service.ts')) return 'NESTJS_SERVICE';
+  if (filePath.includes('bot/') && filePath.endsWith('.module.ts'))
+    return 'NESTJS_MODULE';
+  if (filePath.includes('bot/') && filePath.endsWith('.service.ts'))
+    return 'NESTJS_SERVICE';
   return 'REACT_COMPONENT';
 }
 
@@ -53,7 +63,10 @@ export const builderRouter = createTRPCRouter({
       });
 
       if (!project) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Project not found' });
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Project not found',
+        });
       }
 
       return project.pages;
@@ -82,12 +95,18 @@ export const builderRouter = createTRPCRouter({
     }),
 
   createPage: protectedProcedure
-    .input(z.object({
-      projectId: z.string(),
-      name: z.string().min(1).max(100),
-      slug: z.string().min(1).max(100).regex(/^[a-z0-9-/]+$/),
-      isEntry: z.boolean().default(false),
-    }))
+    .input(
+      z.object({
+        projectId: z.string(),
+        name: z.string().min(1).max(100),
+        slug: z
+          .string()
+          .min(1)
+          .max(100)
+          .regex(/^[a-z0-9-/]+$/),
+        isEntry: z.boolean().default(false),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       const project = await prisma.project.findFirst({
         where: {
@@ -100,7 +119,10 @@ export const builderRouter = createTRPCRouter({
       });
 
       if (!project) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Project not found' });
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Project not found',
+        });
       }
 
       // Check for unique slug
@@ -112,7 +134,10 @@ export const builderRouter = createTRPCRouter({
       });
 
       if (existingPage) {
-        throw new TRPCError({ code: 'CONFLICT', message: 'Page with this slug already exists' });
+        throw new TRPCError({
+          code: 'CONFLICT',
+          message: 'Page with this slug already exists',
+        });
       }
 
       // If isEntry, unset other entry pages
@@ -134,13 +159,20 @@ export const builderRouter = createTRPCRouter({
     }),
 
   updatePage: protectedProcedure
-    .input(z.object({
-      pageId: z.string(),
-      name: z.string().min(1).max(100).optional(),
-      slug: z.string().min(1).max(100).regex(/^[a-z0-9-/]+$/).optional(),
-      isEntry: z.boolean().optional(),
-      background: z.any().optional(),
-    }))
+    .input(
+      z.object({
+        pageId: z.string(),
+        name: z.string().min(1).max(100).optional(),
+        slug: z
+          .string()
+          .min(1)
+          .max(100)
+          .regex(/^[a-z0-9-/]+$/)
+          .optional(),
+        isEntry: z.boolean().optional(),
+        background: z.any().optional(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       const page = await prisma.page.findFirst({
         where: {
@@ -196,13 +228,17 @@ export const builderRouter = createTRPCRouter({
     }),
 
   reorderPages: protectedProcedure
-    .input(z.object({
-      projectId: z.string(),
-      pageOrders: z.array(z.object({
-        pageId: z.string(),
-        order: z.number(),
-      })),
-    }))
+    .input(
+      z.object({
+        projectId: z.string(),
+        pageOrders: z.array(
+          z.object({
+            pageId: z.string(),
+            order: z.number(),
+          }),
+        ),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       const project = await prisma.project.findFirst({
         where: {
@@ -212,7 +248,10 @@ export const builderRouter = createTRPCRouter({
       });
 
       if (!project) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Project not found' });
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Project not found',
+        });
       }
 
       return prisma.$transaction(
@@ -220,8 +259,8 @@ export const builderRouter = createTRPCRouter({
           prisma.page.update({
             where: { id: pageId },
             data: { order },
-          })
-        )
+          }),
+        ),
       );
     }),
 
@@ -258,17 +297,22 @@ export const builderRouter = createTRPCRouter({
     }),
 
   createNode: protectedProcedure
-    .input(z.object({
-      pageId: z.string(),
-      parentId: z.string().nullable(),
-      type: z.string(),
-      order: z.number().default(0),
-    }))
+    .input(
+      z.object({
+        pageId: z.string(),
+        parentId: z.string().nullable(),
+        type: z.string(),
+        order: z.number().default(0),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       // Validate component type
       const def = getComponentDefinition(input.type);
       if (!def) {
-        throw new TRPCError({ code: 'BAD_REQUEST', message: `Unknown component type: ${input.type}` });
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: `Unknown component type: ${input.type}`,
+        });
       }
 
       // Verify page ownership
@@ -295,12 +339,18 @@ export const builderRouter = createTRPCRouter({
         });
 
         if (!parent) {
-          throw new TRPCError({ code: 'NOT_FOUND', message: 'Parent node not found' });
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Parent node not found',
+          });
         }
 
         const parentDef = getComponentDefinition(parent.type);
         if (!parentDef?.isContainer) {
-          throw new TRPCError({ code: 'BAD_REQUEST', message: 'Parent node is not a container' });
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'Parent node is not a container',
+          });
         }
       }
 
@@ -327,10 +377,12 @@ export const builderRouter = createTRPCRouter({
     }),
 
   updateNodeProps: protectedProcedure
-    .input(z.object({
-      nodeId: z.string(),
-      props: z.any(),
-    }))
+    .input(
+      z.object({
+        nodeId: z.string(),
+        props: z.any(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       const node = await prisma.componentNode.findFirst({
         where: {
@@ -363,10 +415,12 @@ export const builderRouter = createTRPCRouter({
     }),
 
   updateNodeStyles: protectedProcedure
-    .input(z.object({
-      nodeId: z.string(),
-      styles: z.any(),
-    }))
+    .input(
+      z.object({
+        nodeId: z.string(),
+        styles: z.any(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       const node = await prisma.componentNode.findFirst({
         where: {
@@ -390,11 +444,13 @@ export const builderRouter = createTRPCRouter({
     }),
 
   moveNode: protectedProcedure
-    .input(z.object({
-      nodeId: z.string(),
-      parentId: z.string().nullable(),
-      order: z.number(),
-    }))
+    .input(
+      z.object({
+        nodeId: z.string(),
+        parentId: z.string().nullable(),
+        order: z.number(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       const node = await prisma.componentNode.findFirst({
         where: {
@@ -425,10 +481,13 @@ export const builderRouter = createTRPCRouter({
               message: 'Cannot move node into itself or its descendants',
             });
           }
-          const parent: { parentId: string | null } | null = await prisma.componentNode.findUnique({
-            where: { id: currentParentId },
-          });
-          currentParentId = parent?.parentId ? (parent.parentId as string) : null;
+          const parent: { parentId: string | null } | null =
+            await prisma.componentNode.findUnique({
+              where: { id: currentParentId },
+            });
+          currentParentId = parent?.parentId
+            ? (parent.parentId as string)
+            : null;
         }
       }
 
@@ -482,15 +541,17 @@ export const builderRouter = createTRPCRouter({
 
       return prisma.$transaction(async (tx) => {
         // Collect all descendants
-        const collectDescendants = async (parentId: string): Promise<string[]> => {
+        const collectDescendants = async (
+          parentId: string,
+        ): Promise<string[]> => {
           const children = await tx.componentNode.findMany({
             where: { parentId },
             select: { id: true },
           });
-          const childIds = children.map(c => c.id);
+          const childIds = children.map((c) => c.id);
           const descendantIds: string[] = [];
           for (const childId of childIds) {
-            descendantIds.push(...await collectDescendants(childId));
+            descendantIds.push(...(await collectDescendants(childId)));
           }
           return [...childIds, ...descendantIds];
         };
@@ -543,7 +604,7 @@ export const builderRouter = createTRPCRouter({
         const cloneNode = async (
           sourceNode: typeof node,
           newParentId: string | null,
-          newOrder: number
+          newOrder: number,
         ): Promise<string> => {
           // Create new node
           const newNode = await tx.componentNode.create({
@@ -604,13 +665,35 @@ export const builderRouter = createTRPCRouter({
   // ========================================
 
   addInteraction: protectedProcedure
-    .input(z.object({
-      nodeId: z.string(),
-      trigger: z.enum(['onClick', 'onSubmit', 'onHover', 'onMount', 'onMessage']),
-      type: z.enum(['NAVIGATE', 'OPEN_MODAL', 'CLOSE_MODAL', 'SCROLL_TO', 'SHOW_FORM', 'HIDE_FORM', 'SET_STATE', 'TOGGLE_VISIBILITY', 'TRIGGER_WORKFLOW', 'SEND_MESSAGE', 'EDIT_MESSAGE', 'SHOW_KEYBOARD', 'HIDE_KEYBOARD']),
-      config: z.any().default({}),
-      workflowId: z.string().optional(),
-    }))
+    .input(
+      z.object({
+        nodeId: z.string(),
+        trigger: z.enum([
+          'onClick',
+          'onSubmit',
+          'onHover',
+          'onMount',
+          'onMessage',
+        ]),
+        type: z.enum([
+          'NAVIGATE',
+          'OPEN_MODAL',
+          'CLOSE_MODAL',
+          'SCROLL_TO',
+          'SHOW_FORM',
+          'HIDE_FORM',
+          'SET_STATE',
+          'TOGGLE_VISIBILITY',
+          'TRIGGER_WORKFLOW',
+          'SEND_MESSAGE',
+          'EDIT_MESSAGE',
+          'SHOW_KEYBOARD',
+          'HIDE_KEYBOARD',
+        ]),
+        config: z.any().default({}),
+        workflowId: z.string().optional(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       const node = await prisma.componentNode.findFirst({
         where: {
@@ -644,7 +727,10 @@ export const builderRouter = createTRPCRouter({
         });
 
         if (!workflow) {
-          throw new TRPCError({ code: 'NOT_FOUND', message: 'Workflow not found' });
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Workflow not found',
+          });
         }
       }
 
@@ -661,13 +747,33 @@ export const builderRouter = createTRPCRouter({
     }),
 
   updateInteraction: protectedProcedure
-    .input(z.object({
-      interactionId: z.string(),
-      trigger: z.enum(['onClick', 'onSubmit', 'onHover', 'onMount', 'onMessage']).optional(),
-      type: z.enum(['NAVIGATE', 'OPEN_MODAL', 'CLOSE_MODAL', 'SCROLL_TO', 'SHOW_FORM', 'HIDE_FORM', 'SET_STATE', 'TOGGLE_VISIBILITY', 'TRIGGER_WORKFLOW', 'SEND_MESSAGE', 'EDIT_MESSAGE', 'SHOW_KEYBOARD', 'HIDE_KEYBOARD']).optional(),
-      config: z.any().optional(),
-      workflowId: z.string().optional().nullable(),
-    }))
+    .input(
+      z.object({
+        interactionId: z.string(),
+        trigger: z
+          .enum(['onClick', 'onSubmit', 'onHover', 'onMount', 'onMessage'])
+          .optional(),
+        type: z
+          .enum([
+            'NAVIGATE',
+            'OPEN_MODAL',
+            'CLOSE_MODAL',
+            'SCROLL_TO',
+            'SHOW_FORM',
+            'HIDE_FORM',
+            'SET_STATE',
+            'TOGGLE_VISIBILITY',
+            'TRIGGER_WORKFLOW',
+            'SEND_MESSAGE',
+            'EDIT_MESSAGE',
+            'SHOW_KEYBOARD',
+            'HIDE_KEYBOARD',
+          ])
+          .optional(),
+        config: z.any().optional(),
+        workflowId: z.string().optional().nullable(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       const interaction = await prisma.interaction.findFirst({
         where: {
@@ -683,7 +789,10 @@ export const builderRouter = createTRPCRouter({
       });
 
       if (!interaction) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Interaction not found' });
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Interaction not found',
+        });
       }
 
       const { interactionId, ...data } = input;
@@ -711,7 +820,10 @@ export const builderRouter = createTRPCRouter({
       });
 
       if (!interaction) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Interaction not found' });
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Interaction not found',
+        });
       }
 
       return prisma.$transaction(async (tx) => {
@@ -738,13 +850,17 @@ export const builderRouter = createTRPCRouter({
     }),
 
   reorderInteractions: protectedProcedure
-    .input(z.object({
-      nodeId: z.string(),
-      interactionOrders: z.array(z.object({
-        interactionId: z.string(),
-        order: z.number(),
-      })),
-    }))
+    .input(
+      z.object({
+        nodeId: z.string(),
+        interactionOrders: z.array(
+          z.object({
+            interactionId: z.string(),
+            order: z.number(),
+          }),
+        ),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       const node = await prisma.componentNode.findFirst({
         where: {
@@ -766,8 +882,8 @@ export const builderRouter = createTRPCRouter({
           prisma.interaction.update({
             where: { id: interactionId },
             data: { order },
-          })
-        )
+          }),
+        ),
       );
     }),
 
@@ -776,10 +892,12 @@ export const builderRouter = createTRPCRouter({
   // ========================================
 
   generateCode: protectedProcedure
-    .input(z.object({
-      projectId: z.string(),
-      pageIds: z.array(z.string()).optional(), // Optional: generate only specific pages
-    }))
+    .input(
+      z.object({
+        projectId: z.string(),
+        pageIds: z.array(z.string()).optional(), // Optional: generate only specific pages
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       const project = await prisma.project.findFirst({
         where: {
@@ -802,7 +920,10 @@ export const builderRouter = createTRPCRouter({
       });
 
       if (!project) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Project not found' });
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Project not found',
+        });
       }
 
       // Get all nodes for the pages
@@ -813,10 +934,13 @@ export const builderRouter = createTRPCRouter({
       });
 
       // Build nodes map
-      const nodesMap = nodes.reduce((acc, node) => {
-        acc[node.id] = node;
-        return acc;
-      }, {} as Record<string, typeof nodes[0]>);
+      const nodesMap = nodes.reduce(
+        (acc, node) => {
+          acc[node.id] = node;
+          return acc;
+        },
+        {} as Record<string, (typeof nodes)[0]>,
+      );
 
       let files: { path: string; content: string }[] = [];
 
@@ -830,20 +954,20 @@ export const builderRouter = createTRPCRouter({
             colors: project.designSystem.colors,
             spacing: project.designSystem.spacing,
             typography: project.designSystem.typography,
-          }
+          },
         );
       } else {
         const generator = new NestJSBotGenerator();
         files = generator.generateBot(
           project as any,
           project.pages as any,
-          nodesMap as any
+          nodesMap as any,
         );
       }
 
       // Save artifacts
       const artifacts = await prisma.$transaction(
-        files.map(file =>
+        files.map((file) =>
           prisma.codeArtifact.upsert({
             where: {
               projectId_filePath: {
@@ -863,12 +987,12 @@ export const builderRouter = createTRPCRouter({
               contentHash: hashContent(file.content),
               generatedAt: new Date(),
             },
-          })
-        )
+          }),
+        ),
       );
 
       return {
-        files: files.map(f => ({ path: f.path })),
+        files: files.map((f) => ({ path: f.path })),
         artifacts,
       };
     }),
@@ -884,7 +1008,10 @@ export const builderRouter = createTRPCRouter({
       });
 
       if (!project) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Project not found' });
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Project not found',
+        });
       }
 
       return prisma.codeArtifact.findMany({
@@ -894,10 +1021,12 @@ export const builderRouter = createTRPCRouter({
     }),
 
   getArtifact: protectedProcedure
-    .input(z.object({
-      projectId: z.string(),
-      filePath: z.string(),
-    }))
+    .input(
+      z.object({
+        projectId: z.string(),
+        filePath: z.string(),
+      }),
+    )
     .query(async ({ ctx, input }) => {
       const project = await prisma.project.findFirst({
         where: {
@@ -907,7 +1036,10 @@ export const builderRouter = createTRPCRouter({
       });
 
       if (!project) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Project not found' });
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Project not found',
+        });
       }
 
       return prisma.codeArtifact.findUnique({

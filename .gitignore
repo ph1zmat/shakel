@@ -46,3 +46,10 @@ next-env.d.ts
 ARCHITECTURE.md
 MIGRATION_PLAN.md
 MIGRATION_EXECUTION_PLAN.md
+BUILDER_IDEAL_PLAN.md
+GOOGLE_OAUTH_FIX.md
+OAUTH_SETUP.md
+mprocs.log
+*.log
+.vercel
+.env*

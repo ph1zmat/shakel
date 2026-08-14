@@ -1,19 +1,82 @@
-import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
-import { createTRPCRouter, protectedProcedure } from '@/trpc/init';
+import { z } from 'zod';
 import prisma from '@/lib/db';
+import { createTRPCRouter, protectedProcedure } from '@/trpc/init';
 
 // Default tokens for new DesignSystem
 const DEFAULT_COLORS = [
-  { name: 'background', hue: 0, saturation: 0, lightness: 100, isSemantic: true, semanticRole: 'background' },
-  { name: 'foreground', hue: 0, saturation: 0, lightness: 0, isSemantic: true, semanticRole: 'foreground' },
-  { name: 'primary', hue: 217, saturation: 91, lightness: 60, isSemantic: true, semanticRole: 'accent' },
-  { name: 'primary-foreground', hue: 0, saturation: 0, lightness: 100, isSemantic: true, semanticRole: 'accent' },
-  { name: 'muted', hue: 0, saturation: 0, lightness: 95, isSemantic: true, semanticRole: 'muted' },
-  { name: 'muted-foreground', hue: 0, saturation: 0, lightness: 45, isSemantic: true, semanticRole: 'muted' },
-  { name: 'danger', hue: 0, saturation: 84, lightness: 60, isSemantic: true, semanticRole: 'danger' },
-  { name: 'success', hue: 142, saturation: 71, lightness: 45, isSemantic: true, semanticRole: 'success' },
-  { name: 'warning', hue: 38, saturation: 92, lightness: 50, isSemantic: true, semanticRole: 'warning' },
+  {
+    name: 'background',
+    hue: 0,
+    saturation: 0,
+    lightness: 100,
+    isSemantic: true,
+    semanticRole: 'background',
+  },
+  {
+    name: 'foreground',
+    hue: 0,
+    saturation: 0,
+    lightness: 0,
+    isSemantic: true,
+    semanticRole: 'foreground',
+  },
+  {
+    name: 'primary',
+    hue: 217,
+    saturation: 91,
+    lightness: 60,
+    isSemantic: true,
+    semanticRole: 'accent',
+  },
+  {
+    name: 'primary-foreground',
+    hue: 0,
+    saturation: 0,
+    lightness: 100,
+    isSemantic: true,
+    semanticRole: 'accent',
+  },
+  {
+    name: 'muted',
+    hue: 0,
+    saturation: 0,
+    lightness: 95,
+    isSemantic: true,
+    semanticRole: 'muted',
+  },
+  {
+    name: 'muted-foreground',
+    hue: 0,
+    saturation: 0,
+    lightness: 45,
+    isSemantic: true,
+    semanticRole: 'muted',
+  },
+  {
+    name: 'danger',
+    hue: 0,
+    saturation: 84,
+    lightness: 60,
+    isSemantic: true,
+    semanticRole: 'danger',
+  },
+  {
+    name: 'success',
+    hue: 142,
+    saturation: 71,
+    lightness: 45,
+    isSemantic: true,
+    semanticRole: 'success',
+  },
+  {
+    name: 'warning',
+    hue: 38,
+    saturation: 92,
+    lightness: 50,
+    isSemantic: true,
+    semanticRole: 'warning',
+  },
 ];
 
 const DEFAULT_SPACING = [
@@ -27,9 +90,30 @@ const DEFAULT_SPACING = [
 ];
 
 const DEFAULT_TYPOGRAPHY = [
-  { name: 'heading', family: 'Inter', weights: [400, 500, 600, 700], minSize: 1.5, maxSize: 3, lineHeight: 1.2 },
-  { name: 'body', family: 'Inter', weights: [400, 500], minSize: 0.875, maxSize: 1, lineHeight: 1.5 },
-  { name: 'mono', family: 'JetBrains Mono', weights: [400, 500], minSize: 0.875, maxSize: 1, lineHeight: 1.5 },
+  {
+    name: 'heading',
+    family: 'Inter',
+    weights: [400, 500, 600, 700],
+    minSize: 1.5,
+    maxSize: 3,
+    lineHeight: 1.2,
+  },
+  {
+    name: 'body',
+    family: 'Inter',
+    weights: [400, 500],
+    minSize: 0.875,
+    maxSize: 1,
+    lineHeight: 1.5,
+  },
+  {
+    name: 'mono',
+    family: 'JetBrains Mono',
+    weights: [400, 500],
+    minSize: 0.875,
+    maxSize: 1,
+    lineHeight: 1.5,
+  },
 ];
 
 export const designSystemRouter = createTRPCRouter({
@@ -58,7 +142,10 @@ export const designSystemRouter = createTRPCRouter({
       });
 
       if (!project) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Project not found' });
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Project not found',
+        });
       }
 
       return project.designSystem;
@@ -85,17 +172,22 @@ export const designSystemRouter = createTRPCRouter({
       });
 
       if (!designSystem) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Design system not found' });
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Design system not found',
+        });
       }
 
       return designSystem;
     }),
 
   create: protectedProcedure
-    .input(z.object({
-      name: z.string().min(1).max(100),
-      projectId: z.string(),
-    }))
+    .input(
+      z.object({
+        name: z.string().min(1).max(100),
+        projectId: z.string(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       // Verify project ownership
       const project = await prisma.project.findFirst({
@@ -106,7 +198,10 @@ export const designSystemRouter = createTRPCRouter({
       });
 
       if (!project) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Project not found' });
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Project not found',
+        });
       }
 
       return prisma.designSystem.create({
@@ -134,10 +229,12 @@ export const designSystemRouter = createTRPCRouter({
     }),
 
   update: protectedProcedure
-    .input(z.object({
-      id: z.string(),
-      name: z.string().min(1).max(100),
-    }))
+    .input(
+      z.object({
+        id: z.string(),
+        name: z.string().min(1).max(100),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       const designSystem = await prisma.designSystem.findFirst({
         where: {
@@ -151,7 +248,10 @@ export const designSystemRouter = createTRPCRouter({
       });
 
       if (!designSystem) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Design system not found' });
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Design system not found',
+        });
       }
 
       return prisma.designSystem.update({
@@ -178,7 +278,10 @@ export const designSystemRouter = createTRPCRouter({
       });
 
       if (!designSystem) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Design system not found' });
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Design system not found',
+        });
       }
 
       // Check if it's used by any projects
@@ -199,16 +302,22 @@ export const designSystemRouter = createTRPCRouter({
   // ========================================
 
   createColorToken: protectedProcedure
-    .input(z.object({
-      designSystemId: z.string(),
-      name: z.string().min(1).max(50).regex(/^[a-z0-9-]+$/),
-      hue: z.number().int().min(0).max(360),
-      saturation: z.number().int().min(0).max(100),
-      lightness: z.number().int().min(0).max(100),
-      alpha: z.number().min(0).max(1).default(1),
-      isSemantic: z.boolean().default(false),
-      semanticRole: z.string().optional(),
-    }))
+    .input(
+      z.object({
+        designSystemId: z.string(),
+        name: z
+          .string()
+          .min(1)
+          .max(50)
+          .regex(/^[a-z0-9-]+$/),
+        hue: z.number().int().min(0).max(360),
+        saturation: z.number().int().min(0).max(100),
+        lightness: z.number().int().min(0).max(100),
+        alpha: z.number().min(0).max(1).default(1),
+        isSemantic: z.boolean().default(false),
+        semanticRole: z.string().optional(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       // Verify ownership
       const designSystem = await prisma.designSystem.findFirst({
@@ -223,7 +332,10 @@ export const designSystemRouter = createTRPCRouter({
       });
 
       if (!designSystem) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Design system not found' });
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Design system not found',
+        });
       }
 
       return prisma.colorToken.create({
@@ -232,15 +344,17 @@ export const designSystemRouter = createTRPCRouter({
     }),
 
   updateColorToken: protectedProcedure
-    .input(z.object({
-      id: z.string(),
-      hue: z.number().int().min(0).max(360).optional(),
-      saturation: z.number().int().min(0).max(100).optional(),
-      lightness: z.number().int().min(0).max(100).optional(),
-      alpha: z.number().min(0).max(1).optional(),
-      isSemantic: z.boolean().optional(),
-      semanticRole: z.string().optional(),
-    }))
+    .input(
+      z.object({
+        id: z.string(),
+        hue: z.number().int().min(0).max(360).optional(),
+        saturation: z.number().int().min(0).max(100).optional(),
+        lightness: z.number().int().min(0).max(100).optional(),
+        alpha: z.number().min(0).max(1).optional(),
+        isSemantic: z.boolean().optional(),
+        semanticRole: z.string().optional(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       const token = await prisma.colorToken.findFirst({
         where: {
@@ -256,7 +370,10 @@ export const designSystemRouter = createTRPCRouter({
       });
 
       if (!token) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Color token not found' });
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Color token not found',
+        });
       }
 
       const { id, ...data } = input;
@@ -283,7 +400,10 @@ export const designSystemRouter = createTRPCRouter({
       });
 
       if (!token) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Color token not found' });
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Color token not found',
+        });
       }
 
       return prisma.colorToken.delete({
@@ -296,11 +416,17 @@ export const designSystemRouter = createTRPCRouter({
   // ========================================
 
   createSpacingToken: protectedProcedure
-    .input(z.object({
-      designSystemId: z.string(),
-      name: z.string().min(1).max(50).regex(/^[a-z0-9-]+$/),
-      value: z.number().positive(),
-    }))
+    .input(
+      z.object({
+        designSystemId: z.string(),
+        name: z
+          .string()
+          .min(1)
+          .max(50)
+          .regex(/^[a-z0-9-]+$/),
+        value: z.number().positive(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       const designSystem = await prisma.designSystem.findFirst({
         where: {
@@ -314,7 +440,10 @@ export const designSystemRouter = createTRPCRouter({
       });
 
       if (!designSystem) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Design system not found' });
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Design system not found',
+        });
       }
 
       return prisma.spacingToken.create({
@@ -323,10 +452,12 @@ export const designSystemRouter = createTRPCRouter({
     }),
 
   updateSpacingToken: protectedProcedure
-    .input(z.object({
-      id: z.string(),
-      value: z.number().positive(),
-    }))
+    .input(
+      z.object({
+        id: z.string(),
+        value: z.number().positive(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       const token = await prisma.spacingToken.findFirst({
         where: {
@@ -342,7 +473,10 @@ export const designSystemRouter = createTRPCRouter({
       });
 
       if (!token) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Spacing token not found' });
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Spacing token not found',
+        });
       }
 
       return prisma.spacingToken.update({
@@ -368,7 +502,10 @@ export const designSystemRouter = createTRPCRouter({
       });
 
       if (!token) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Spacing token not found' });
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Spacing token not found',
+        });
       }
 
       return prisma.spacingToken.delete({
@@ -381,16 +518,18 @@ export const designSystemRouter = createTRPCRouter({
   // ========================================
 
   createTypographyToken: protectedProcedure
-    .input(z.object({
-      designSystemId: z.string(),
-      name: z.string().min(1).max(50),
-      family: z.string().min(1),
-      weights: z.array(z.number()).default([400]),
-      fallback: z.string().default('system-ui, sans-serif'),
-      minSize: z.number().positive(),
-      maxSize: z.number().positive(),
-      lineHeight: z.number().positive(),
-    }))
+    .input(
+      z.object({
+        designSystemId: z.string(),
+        name: z.string().min(1).max(50),
+        family: z.string().min(1),
+        weights: z.array(z.number()).default([400]),
+        fallback: z.string().default('system-ui, sans-serif'),
+        minSize: z.number().positive(),
+        maxSize: z.number().positive(),
+        lineHeight: z.number().positive(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       const designSystem = await prisma.designSystem.findFirst({
         where: {
@@ -404,7 +543,10 @@ export const designSystemRouter = createTRPCRouter({
       });
 
       if (!designSystem) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Design system not found' });
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Design system not found',
+        });
       }
 
       return prisma.typographyToken.create({
@@ -413,15 +555,17 @@ export const designSystemRouter = createTRPCRouter({
     }),
 
   updateTypographyToken: protectedProcedure
-    .input(z.object({
-      id: z.string(),
-      family: z.string().min(1).optional(),
-      weights: z.array(z.number()).optional(),
-      fallback: z.string().optional(),
-      minSize: z.number().positive().optional(),
-      maxSize: z.number().positive().optional(),
-      lineHeight: z.number().positive().optional(),
-    }))
+    .input(
+      z.object({
+        id: z.string(),
+        family: z.string().min(1).optional(),
+        weights: z.array(z.number()).optional(),
+        fallback: z.string().optional(),
+        minSize: z.number().positive().optional(),
+        maxSize: z.number().positive().optional(),
+        lineHeight: z.number().positive().optional(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       const token = await prisma.typographyToken.findFirst({
         where: {
@@ -437,7 +581,10 @@ export const designSystemRouter = createTRPCRouter({
       });
 
       if (!token) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Typography token not found' });
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Typography token not found',
+        });
       }
 
       const { id, ...data } = input;
@@ -464,7 +611,10 @@ export const designSystemRouter = createTRPCRouter({
       });
 
       if (!token) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Typography token not found' });
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Typography token not found',
+        });
       }
 
       return prisma.typographyToken.delete({
@@ -477,12 +627,14 @@ export const designSystemRouter = createTRPCRouter({
   // ========================================
 
   createEffectToken: protectedProcedure
-    .input(z.object({
-      designSystemId: z.string(),
-      name: z.string().min(1).max(50),
-      type: z.enum(['SHADOW', 'BLUR', 'GLOW', 'BORDER']),
-      params: z.any(),
-    }))
+    .input(
+      z.object({
+        designSystemId: z.string(),
+        name: z.string().min(1).max(50),
+        type: z.enum(['SHADOW', 'BLUR', 'GLOW', 'BORDER']),
+        params: z.any(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       const designSystem = await prisma.designSystem.findFirst({
         where: {
@@ -496,7 +648,10 @@ export const designSystemRouter = createTRPCRouter({
       });
 
       if (!designSystem) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Design system not found' });
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Design system not found',
+        });
       }
 
       return prisma.effectToken.create({
@@ -505,11 +660,13 @@ export const designSystemRouter = createTRPCRouter({
     }),
 
   updateEffectToken: protectedProcedure
-    .input(z.object({
-      id: z.string(),
-      type: z.enum(['SHADOW', 'BLUR', 'GLOW', 'BORDER']).optional(),
-      params: z.any().optional(),
-    }))
+    .input(
+      z.object({
+        id: z.string(),
+        type: z.enum(['SHADOW', 'BLUR', 'GLOW', 'BORDER']).optional(),
+        params: z.any().optional(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       const token = await prisma.effectToken.findFirst({
         where: {
@@ -525,7 +682,10 @@ export const designSystemRouter = createTRPCRouter({
       });
 
       if (!token) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Effect token not found' });
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Effect token not found',
+        });
       }
 
       const { id, ...data } = input;
@@ -552,7 +712,10 @@ export const designSystemRouter = createTRPCRouter({
       });
 
       if (!token) {
-        throw new TRPCError({ code: 'NOT_FOUND', message: 'Effect token not found' });
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Effect token not found',
+        });
       }
 
       return prisma.effectToken.delete({

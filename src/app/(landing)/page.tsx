@@ -1,27 +1,36 @@
 import {
-	Hero,
-	LogoCloud,
-	Showcase,
-	BentoFeatures,
-	CodeShowcase,
-	HowItWorks,
-	Features,
-	Testimonials,
-	CTA,
-} from '@/features/landing'
+  BentoFeatures,
+  CodeShowcase,
+  CTA,
+  Features,
+  Hero,
+  HowItWorks,
+  LogoCloud,
+  Showcase,
+  Testimonials,
+} from '@/features/landing';
 
 export default function HomePage() {
-	return (
-		<main className='min-h-screen'>
-			<Hero />
-			<LogoCloud />
-			<Showcase />
-			<BentoFeatures />
-			<CodeShowcase />
-			<HowItWorks />
-			<Features />
-			<Testimonials />
-			<CTA />
-		</main>
-	)
+  return (
+    <>
+      <header className="sr-only">
+        <h1>Shakel - Визуальный конструктор приложений без кода</h1>
+        <p>
+          Платформа для создания веб-приложений, автоматизации workflows и
+          интеграции AI
+        </p>
+      </header>
+      <main className="min-h-screen" id="main-content">
+        <Hero />
+        <LogoCloud />
+        <Showcase />
+        <BentoFeatures />
+        <CodeShowcase />
+        <HowItWorks />
+        <Features />
+        <Testimonials />
+        <CTA />
+      </main>
+    </>
+  );
 }

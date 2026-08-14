@@ -1,25 +1,28 @@
 'use client';
 
+import {
+  ArrowRight,
+  Building2,
+  Check,
+  Clock,
+  Github,
+  Linkedin,
+  Mail,
+  MapPin,
+  MessageCircle,
+  MessageSquare,
+  Phone,
+  Send,
+  Twitter,
+} from 'lucide-react';
 import { motion } from 'motion/react';
 import { useState } from 'react';
-import { 
-  Mail, 
-  MapPin, 
-  Phone, 
-  Clock, 
-  Send,
-  MessageSquare,
-  Building2,
-  ArrowRight,
-  Check,
-  Github,
-  Twitter,
-  MessageCircle,
-  Linkedin
-} from 'lucide-react';
+import {
+  ContentPageBackground,
+  FooterBackground,
+} from '@/components/ui/backgrounds';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { ContentPageBackground, FooterBackground } from '@/components/ui/backgrounds';
 
 const contactMethods = [
   {
@@ -115,15 +118,17 @@ export default function ContactPage() {
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-8"
             >
               <MessageSquare className="w-4 h-4 text-primary" />
-              <span className="text-sm font-medium text-white/80">Связаться с нами</span>
+              <span className="text-sm font-medium text-white/80">
+                Связаться с нами
+              </span>
             </motion.div>
 
             <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 tracking-tight">
               Давайте <span className="text-gradient">поговорим</span>
             </h1>
             <p className="text-xl text-white/50 max-w-2xl mx-auto">
-              Есть вопросы? Мы здесь, чтобы помочь. 
-              Выберите удобный способ связи или заполните форму.
+              Есть вопросы? Мы здесь, чтобы помочь. Выберите удобный способ
+              связи или заполните форму.
             </p>
           </motion.div>
         </div>
@@ -143,13 +148,18 @@ export default function ContactPage() {
                 transition={{ delay: index * 0.1 }}
                 className="group p-6 rounded-2xl border border-white/10 bg-white/[0.02] hover:border-primary/30 hover:bg-white/[0.04] transition-all"
               >
-                <div 
+                <div
                   className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-110"
                   style={{ backgroundColor: `${method.color}15` }}
                 >
-                  <method.icon className="w-6 h-6" style={{ color: method.color }} />
+                  <method.icon
+                    className="w-6 h-6"
+                    style={{ color: method.color }}
+                  />
                 </div>
-                <h3 className="text-lg font-bold text-white mb-1">{method.title}</h3>
+                <h3 className="text-lg font-bold text-white mb-1">
+                  {method.title}
+                </h3>
                 <p className="text-primary font-medium mb-2">{method.value}</p>
                 <p className="text-sm text-white/40">{method.description}</p>
               </motion.a>
@@ -169,27 +179,37 @@ export default function ContactPage() {
               viewport={{ once: true }}
             >
               <div className="p-8 rounded-2xl border border-white/10 bg-white/[0.02]">
-                <h2 className="text-2xl font-bold text-white mb-6">Отправить сообщение</h2>
-                
+                <h2 className="text-2xl font-bold text-white mb-6">
+                  Отправить сообщение
+                </h2>
+
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-white/60 mb-2">Имя</label>
+                      <label className="block text-sm font-medium text-white/60 mb-2">
+                        Имя
+                      </label>
                       <input
                         type="text"
                         value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({ ...formData, name: e.target.value })
+                        }
                         className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:border-primary/50 transition-colors"
                         placeholder="Иван Иванов"
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-white/60 mb-2">Email</label>
+                      <label className="block text-sm font-medium text-white/60 mb-2">
+                        Email
+                      </label>
                       <input
                         type="email"
                         value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({ ...formData, email: e.target.value })
+                        }
                         className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:border-primary/50 transition-colors"
                         placeholder="ivan@company.com"
                         required
@@ -198,27 +218,41 @@ export default function ContactPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-white/60 mb-2">Компания</label>
+                    <label className="block text-sm font-medium text-white/60 mb-2">
+                      Компания
+                    </label>
                     <input
                       type="text"
                       value={formData.company}
-                      onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, company: e.target.value })
+                      }
                       className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:border-primary/50 transition-colors"
                       placeholder="ООО «Компания»"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-white/60 mb-2">Тема обращения</label>
+                    <label className="block text-sm font-medium text-white/60 mb-2">
+                      Тема обращения
+                    </label>
                     <select
                       value={formData.inquiry}
-                      onChange={(e) => setFormData({ ...formData, inquiry: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, inquiry: e.target.value })
+                      }
                       className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-primary/50 transition-colors appearance-none cursor-pointer"
                       required
                     >
-                      <option value="" disabled className="bg-[#0a0a0f]">Выберите тему</option>
+                      <option value="" disabled className="bg-[#0a0a0f]">
+                        Выберите тему
+                      </option>
                       {inquiryTypes.map((type) => (
-                        <option key={type.value} value={type.value} className="bg-[#0a0a0f]">
+                        <option
+                          key={type.value}
+                          value={type.value}
+                          className="bg-[#0a0a0f]"
+                        >
                           {type.label}
                         </option>
                       ))}
@@ -226,10 +260,14 @@ export default function ContactPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-white/60 mb-2">Сообщение</label>
+                    <label className="block text-sm font-medium text-white/60 mb-2">
+                      Сообщение
+                    </label>
                     <textarea
                       value={formData.message}
-                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, message: e.target.value })
+                      }
                       rows={4}
                       className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:border-primary/50 transition-colors resize-none"
                       placeholder="Расскажите о вашем проекте..."
@@ -237,10 +275,10 @@ export default function ContactPage() {
                     />
                   </div>
 
-                  <Button 
+                  <Button
                     type="submit"
-                    variant="gradient" 
-                    size="lg" 
+                    variant="gradient"
+                    size="lg"
                     className="w-full"
                     disabled={isSubmitted}
                   >
@@ -284,7 +322,9 @@ export default function ContactPage() {
                       className="p-5 rounded-xl border border-white/10 bg-white/[0.02]"
                     >
                       <div className="flex items-start justify-between mb-3">
-                        <h4 className="text-lg font-semibold text-white">{office.city}</h4>
+                        <h4 className="text-lg font-semibold text-white">
+                          {office.city}
+                        </h4>
                         <span className="flex items-center gap-1 text-xs text-white/40">
                           <Clock className="w-3 h-3" />
                           {office.timezone}
@@ -307,7 +347,9 @@ export default function ContactPage() {
 
               {/* Social Links */}
               <div>
-                <h3 className="text-xl font-bold text-white mb-6">Социальные сети</h3>
+                <h3 className="text-xl font-bold text-white mb-6">
+                  Социальные сети
+                </h3>
                 <div className="grid grid-cols-2 gap-4">
                   {socialLinks.map((social, index) => (
                     <motion.a
@@ -321,8 +363,12 @@ export default function ContactPage() {
                     >
                       <social.icon className="w-5 h-5 text-white/60 group-hover:text-primary transition-colors" />
                       <div>
-                        <div className="font-medium text-white text-sm">{social.label}</div>
-                        <div className="text-xs text-white/40">{social.followers}</div>
+                        <div className="font-medium text-white text-sm">
+                          {social.label}
+                        </div>
+                        <div className="text-xs text-white/40">
+                          {social.followers}
+                        </div>
                       </div>
                     </motion.a>
                   ))}
@@ -336,8 +382,8 @@ export default function ContactPage() {
                   <h4 className="font-semibold text-white">Время ответа</h4>
                 </div>
                 <p className="text-white/60 text-sm">
-                  Обычно отвечаем в течение нескольких часов. 
-                  Для Enterprise клиентов — доступен приоритетный канал 24/7.
+                  Обычно отвечаем в течение нескольких часов. Для Enterprise
+                  клиентов — доступен приоритетный канал 24/7.
                 </p>
               </div>
             </motion.div>
@@ -355,17 +401,17 @@ export default function ContactPage() {
             className="max-w-6xl mx-auto h-[300px] rounded-2xl border border-white/10 bg-white/[0.02] flex items-center justify-center relative overflow-hidden"
           >
             {/* Grid Pattern */}
-            <div 
+            <div
               className="absolute inset-0 opacity-[0.03]"
               style={{
                 backgroundImage: `
                   linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px),
                   linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)
                 `,
-                backgroundSize: '40px 40px'
+                backgroundSize: '40px 40px',
               }}
             />
-            
+
             {/* Location Pins */}
             <div className="absolute left-1/4 top-1/2 -translate-y-1/2">
               <motion.div
@@ -376,7 +422,9 @@ export default function ContactPage() {
                 <div className="w-4 h-4 rounded-full bg-primary" />
                 <div className="absolute inset-0 w-4 h-4 rounded-full bg-primary animate-ping opacity-50" />
               </motion.div>
-              <span className="absolute top-6 left-1/2 -translate-x-1/2 text-xs text-white/40 whitespace-nowrap">Москва</span>
+              <span className="absolute top-6 left-1/2 -translate-x-1/2 text-xs text-white/40 whitespace-nowrap">
+                Москва
+              </span>
             </div>
 
             <div className="absolute right-1/3 top-1/3">
@@ -388,7 +436,9 @@ export default function ContactPage() {
                 <div className="w-4 h-4 rounded-full bg-primary" />
                 <div className="absolute inset-0 w-4 h-4 rounded-full bg-primary animate-ping opacity-50" />
               </motion.div>
-              <span className="absolute top-6 left-1/2 -translate-x-1/2 text-xs text-white/40 whitespace-nowrap">Дубай</span>
+              <span className="absolute top-6 left-1/2 -translate-x-1/2 text-xs text-white/40 whitespace-nowrap">
+                Дубай
+              </span>
             </div>
 
             <p className="text-white/30 text-sm">Global presence</p>

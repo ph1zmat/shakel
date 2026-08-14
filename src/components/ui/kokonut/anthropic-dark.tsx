@@ -1,4 +1,5 @@
 import type { SVGProps } from 'react';
+
 const AnthropicDark = (props: SVGProps<SVGSVGElement>) => (
   <svg
     fill="#ffff"

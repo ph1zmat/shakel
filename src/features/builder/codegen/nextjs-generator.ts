@@ -1,10 +1,18 @@
 // Next.js Code Generator
 // Генерация TypeScript/React кода из ComponentNode tree
 
-import { Project, SourceFile, Writers } from 'ts-morph';
-import { ts } from 'ts-morph'; // For ts.JsxEmit, etc.
-import type { ComponentNode, StyleConfig, StyleValue, Project as ProjectType, Page } from '../stores/canvas-store';
-import { componentRegistry, getComponentDefinition } from '@/lib/codegen/component-registry';
+import { Project, type SourceFile, ts, Writers } from 'ts-morph'; // For ts.JsxEmit, etc.
+import {
+  componentRegistry,
+  getComponentDefinition,
+} from '@/lib/codegen/component-registry';
+import type {
+  ComponentNode,
+  Page,
+  Project as ProjectType,
+  StyleConfig,
+  StyleValue,
+} from '../stores/canvas-store';
 
 // ========================================
 // Types
@@ -16,9 +24,20 @@ export interface GeneratedFile {
 }
 
 export interface DesignSystemTokens {
-  colors: Array<{ name: string; hue: number; saturation: number; lightness: number; alpha: number }>;
+  colors: Array<{
+    name: string;
+    hue: number;
+    saturation: number;
+    lightness: number;
+    alpha: number;
+  }>;
   spacing: Array<{ name: string; value: number }>;
-  typography: Array<{ name: string; family: string; weights: number[]; fallback?: string }>;
+  typography: Array<{
+    name: string;
+    family: string;
+    weights: number[];
+    fallback?: string;
+  }>;
 }
 
 // ========================================
@@ -28,7 +47,7 @@ export interface DesignSystemTokens {
 export class NextJSGenerator {
   private project: Project;
   private usedImports: Map<string, Set<string>> = new Map();
-  
+
   constructor() {
     this.project = new Project({
       compilerOptions: {
@@ -39,48 +58,61 @@ export class NextJSGenerator {
       },
     });
   }
-  
+
   /**
    * Генерация полного Next.js приложения
    */
-  generateProject(project: ProjectType, pages: Page[], nodes: Record<string, ComponentNode>, designTokens: DesignSystemTokens): GeneratedFile[] {
+  generateProject(
+    project: ProjectType,
+    pages: Page[],
+    nodes: Record<string, ComponentNode>,
+    designTokens: DesignSystemTokens,
+  ): GeneratedFile[] {
     const files: GeneratedFile[] = [];
-    
+
     // 1. Генерация globals.css с CSS Variables
     files.push(this.generateGlobalStyles(designTokens));
-    
+
     // 2. Генерация layout.tsx
     files.push(this.generateLayout(project));
-    
+
     // 3. Генерация страниц
     for (const page of pages) {
-      const pageNodes = Object.values(nodes).filter(n => n.pageId === page.id);
+      const pageNodes = Object.values(nodes).filter(
+        (n) => n.pageId === page.id,
+      );
       files.push(this.generatePage(page, pageNodes));
     }
-    
+
     // 4. Генерация runtime bridge для workflow
     files.push(this.generateRuntimeBridge());
-    
+
     return files;
   }
-  
+
   /**
    * Генерация CSS с Design Tokens
    */
   private generateGlobalStyles(tokens: DesignSystemTokens): GeneratedFile {
-    const colorVars = tokens.colors.map(c => {
-      const hsl = `hsla(${c.hue} ${c.saturation}% ${c.lightness}% / ${c.alpha})`;
-      return `  --color-${c.name}: ${hsl};`;
-    }).join('\n');
-    
-    const spacingVars = tokens.spacing.map(s => {
-      return `  --spacing-${s.name}: ${s.value}rem;`;
-    }).join('\n');
-    
-    const typographyVars = tokens.typography.map(t => {
-      return `  --font-${t.name}: ${t.family}, ${t.fallback || 'system-ui, sans-serif'};`;
-    }).join('\n');
-    
+    const colorVars = tokens.colors
+      .map((c) => {
+        const hsl = `hsla(${c.hue} ${c.saturation}% ${c.lightness}% / ${c.alpha})`;
+        return `  --color-${c.name}: ${hsl};`;
+      })
+      .join('\n');
+
+    const spacingVars = tokens.spacing
+      .map((s) => {
+        return `  --spacing-${s.name}: ${s.value}rem;`;
+      })
+      .join('\n');
+
+    const typographyVars = tokens.typography
+      .map((t) => {
+        return `  --font-${t.name}: ${t.family}, ${t.fallback || 'system-ui, sans-serif'};`;
+      })
+      .join('\n');
+
     const content = `@tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -104,21 +136,23 @@ ${typographyVars}
   }
 }
 `;
-    
+
     return { path: 'app/globals.css', content };
   }
-  
+
   /**
    * Генерация корневого layout.tsx
    */
   private generateLayout(project: ProjectType): GeneratedFile {
-    const file = this.project.createSourceFile('temp-layout.tsx', '', { overwrite: true });
-    
+    const file = this.project.createSourceFile('temp-layout.tsx', '', {
+      overwrite: true,
+    });
+
     file.addImportDeclaration({
       moduleSpecifier: 'next/font',
       namedImports: ['Inter'],
     });
-    
+
     file.addStatements(`
 import type { Metadata } from 'next';
 import './globals.css';
@@ -147,36 +181,44 @@ export default function RootLayout({
   );
 }
 `);
-    
+
     return { path: 'app/layout.tsx', content: file.getFullText() };
   }
-  
+
   /**
    * Генерация страницы
    */
-  private generatePage(page: Page, nodes: ComponentNode[]): GeneratedFile {
+  generatePage(page: Page, nodes: ComponentNode[]): GeneratedFile {
     this.usedImports.clear();
-    
-    const file = this.project.createSourceFile(`temp-page-${page.slug}.tsx`, '', { overwrite: true });
-    
+
+    const file = this.project.createSourceFile(
+      `temp-page-${page.slug}.tsx`,
+      '',
+      { overwrite: true },
+    );
+
     // Группируем ноды по parentId
     const nodeTree = this.buildNodeTree(nodes);
-    
+
     // Находим корневые ноды
-    const rootNodes = nodes.filter(n => n.parentId === null).sort((a, b) => a.order - b.order);
-    
+    const rootNodes = nodes
+      .filter((n) => n.parentId === null)
+      .sort((a, b) => a.order - b.order);
+
     // Генерируем JSX для каждого корневого нода
-    const rootElements = rootNodes.map(node => this.generateJSXForNode(node, nodeTree));
-    
+    const rootElements = rootNodes.map((node) =>
+      this.generateJSXForNode(node, nodeTree),
+    );
+
     // Добавляем imports
     this.addImports(file);
-    
+
     // Добавляем runtime imports
     file.addImportDeclaration({
       moduleSpecifier: '@/components/workflow-runtime',
       namedImports: ['useWorkflowRuntime'],
     });
-    
+
     // Генерируем компонент страницы
     const pageContent = `
 export default function ${this.pascalCase(page.name)}Page() {
@@ -187,21 +229,23 @@ ${rootElements.join('\n')}
   );
 }
 `;
-    
+
     file.addStatements(pageContent);
-    
-    return { 
-      path: `app/${page.slug === '/' ? 'page' : page.slug + '/page'}.tsx`, 
-      content: file.getFullText() 
+
+    return {
+      path: `app/${page.slug === '/' ? 'page' : page.slug + '/page'}.tsx`,
+      content: file.getFullText(),
     };
   }
-  
+
   /**
    * Построение дерева нод
    */
-  private buildNodeTree(nodes: ComponentNode[]): Map<string | null, ComponentNode[]> {
+  private buildNodeTree(
+    nodes: ComponentNode[],
+  ): Map<string | null, ComponentNode[]> {
     const tree = new Map<string | null, ComponentNode[]>();
-    
+
     for (const node of nodes) {
       const key = node.parentId;
       if (!tree.has(key)) {
@@ -209,25 +253,29 @@ ${rootElements.join('\n')}
       }
       tree.get(key)!.push(node);
     }
-    
+
     // Сортируем по order
     for (const [, children] of tree) {
       children.sort((a, b) => a.order - b.order);
     }
-    
+
     return tree;
   }
-  
+
   /**
    * Рекурсивная генерация JSX для ноды
    */
-  private generateJSXForNode(node: ComponentNode, tree: Map<string | null, ComponentNode[]>, indent: number = 6): string {
+  private generateJSXForNode(
+    node: ComponentNode,
+    tree: Map<string | null, ComponentNode[]>,
+    indent: number = 6,
+  ): string {
     const def = getComponentDefinition(node.type);
     if (!def) {
       console.warn(`Unknown component type: ${node.type}`);
       return '';
     }
-    
+
     // Отслеживаем импорты
     for (const imp of def.imports) {
       if (!this.usedImports.has(imp)) {
@@ -235,21 +283,21 @@ ${rootElements.join('\n')}
       }
       this.usedImports.get(imp)!.add(def.componentName);
     }
-    
+
     // Генерируем className из стилей
     const className = this.generateClassName(node.styles);
-    
+
     // Генерируем props
     const props = this.serializeProps(node.props, def.props);
-    
+
     // Генерируем event handlers для интеракций
     const eventHandlers = this.generateEventHandlers(node);
-    
+
     // Получаем детей
     const children = tree.get(node.id) || [];
-    
+
     const indentStr = ' '.repeat(indent);
-    
+
     if (children.length === 0) {
       // Self-closing или с текстом
       if (def.type === 'text') {
@@ -265,22 +313,22 @@ ${rootElements.join('\n')}
       }
       return `${indentStr}<${def.componentName}${props}${className}${eventHandlers} />`;
     }
-    
+
     // С детьми
     const childrenJSX = children
-      .map(child => this.generateJSXForNode(child, tree, indent + 2))
+      .map((child) => this.generateJSXForNode(child, tree, indent + 2))
       .filter(Boolean)
       .join('\n');
-    
+
     return `${indentStr}<${def.componentName}${props}${className}${eventHandlers}>\n${childrenJSX}\n${indentStr}</${def.componentName}>`;
   }
-  
+
   /**
    * Генерация className из стилей
    */
   private generateClassName(styles: StyleConfig): string {
     const classes: string[] = [];
-    
+
     // Конвертируем токены в CSS классы
     for (const [key, value] of Object.entries(styles.base || {})) {
       if (value.type === 'token') {
@@ -289,16 +337,19 @@ ${rootElements.join('\n')}
         classes.push(`[--${key}:var(--${value.tokenType}-${value.value})]`);
       }
     }
-    
+
     return classes.length > 0 ? ` className="${classes.join(' ')}"` : '';
   }
-  
+
   /**
    * Сериализация props
    */
-  private serializeProps(props: Record<string, unknown>, propSchema: any[]): string {
+  private serializeProps(
+    props: Record<string, unknown>,
+    propSchema: any[],
+  ): string {
     const entries: string[] = [];
-    
+
     for (const [key, value] of Object.entries(props)) {
       if (value === undefined || value === null) continue;
       if (typeof value === 'boolean') {
@@ -311,18 +362,18 @@ ${rootElements.join('\n')}
         entries.push(`${key}={${JSON.stringify(value)}}`);
       }
     }
-    
+
     return entries.length > 0 ? ' ' + entries.join(' ') : '';
   }
-  
+
   /**
    * Генерация обработчиков событий для интеракций
    */
   private generateEventHandlers(node: ComponentNode): string {
     if (node.interactions.length === 0) return '';
-    
+
     const handlers: string[] = [];
-    
+
     for (const interaction of node.interactions) {
       if (interaction.trigger === 'onClick') {
         handlers.push(`onClick={handleInteraction_${interaction.id}}`);
@@ -330,10 +381,10 @@ ${rootElements.join('\n')}
         handlers.push(`onSubmit={handleInteraction_${interaction.id}}`);
       }
     }
-    
+
     return handlers.length > 0 ? ' ' + handlers.join(' ') : '';
   }
-  
+
   /**
    * Добавление импортов в файл
    */
@@ -345,7 +396,7 @@ ${rootElements.join('\n')}
       });
     }
   }
-  
+
   /**
    * Генерация runtime bridge для workflow
    */
@@ -399,10 +450,10 @@ export function useWorkflowRuntime() {
   return context;
 }
 `;
-    
+
     return { path: 'components/workflow-runtime.tsx', content };
   }
-  
+
   /**
    * Вспомогательная функция: kebab-case → PascalCase
    */
@@ -419,27 +470,33 @@ export function useWorkflowRuntime() {
 // ========================================
 
 export class NestJSBotGenerator {
-  generateBot(project: ProjectType, pages: Page[], nodes: Record<string, ComponentNode>): GeneratedFile[] {
+  generateBot(
+    project: ProjectType,
+    pages: Page[],
+    nodes: Record<string, ComponentNode>,
+  ): GeneratedFile[] {
     const files: GeneratedFile[] = [];
-    
+
     // 1. Генерация модуля бота
     files.push(this.generateBotModule(project));
-    
+
     // 2. Генерация хендлеров для каждой страницы (экрана бота)
     for (const page of pages) {
-      const pageNodes = Object.values(nodes).filter(n => n.pageId === page.id);
+      const pageNodes = Object.values(nodes).filter(
+        (n) => n.pageId === page.id,
+      );
       files.push(this.generateHandler(page, pageNodes));
     }
-    
+
     // 3. Генерация сервиса
     files.push(this.generateBotService(project));
-    
+
     // 4. Генерация клавиатур
     files.push(this.generateKeyboards(pages, nodes));
-    
+
     return files;
   }
-  
+
   private generateBotModule(project: ProjectType): GeneratedFile {
     const content = `import { Module } from '@nestjs/common';
 import { BotService } from './bot.service';
@@ -453,17 +510,17 @@ ${(project as any).pages?.map((p: any) => `import { ${this.pascalCase(p.name)}Ha
 })
 export class BotModule {}
 `;
-    
+
     return { path: 'src/bot/bot.module.ts', content };
   }
-  
+
   private generateHandler(page: Page, nodes: ComponentNode[]): GeneratedFile {
     // Находим текстовые ноды и кнопки
-    const textNodes = nodes.filter(n => n.type === 'telegramText');
-    const keyboardNodes = nodes.filter(n => n.type === 'telegramKeyboard');
-    
+    const textNodes = nodes.filter((n) => n.type === 'telegramText');
+    const keyboardNodes = nodes.filter((n) => n.type === 'telegramKeyboard');
+
     const handlerName = this.pascalCase(page.name);
-    
+
     const content = `import { Injectable } from '@nestjs/common';
 import { Ctx, Hears, Update } from 'nestjs-telegraf';
 import { Context } from 'telegraf';
@@ -477,19 +534,26 @@ export class ${handlerName}Handler {
 
   @Hears('${page.isEntry ? '/start' : page.name}')
   async handle${handlerName}(@Ctx() ctx: Context) {
-    ${textNodes.map(n => `
+    ${textNodes
+      .map(
+        (n) => `
     await ctx.reply('${(n.props.content as string)?.replace(/'/g, "\\'") || 'Hello'}', {
       parse_mode: '${n.props.parseMode || 'HTML'}',
       ...getKeyboard('${page.id}'),
     });
-    `).join('\n')}
+    `,
+      )
+      .join('\n')}
   }
 }
 `;
-    
-    return { path: `src/bot/handlers/${this.kebabCase(page.name)}.handler.ts`, content };
+
+    return {
+      path: `src/bot/handlers/${this.kebabCase(page.name)}.handler.ts`,
+      content,
+    };
   }
-  
+
   private generateBotService(project: ProjectType): GeneratedFile {
     const content = `import { Injectable } from '@nestjs/common';
 import { InjectBot } from 'nestjs-telegraf';
@@ -505,27 +569,36 @@ export class BotService {
   }
 }
 `;
-    
+
     return { path: 'src/bot/bot.service.ts', content };
   }
-  
-  private generateKeyboards(pages: Page[], nodes: Record<string, ComponentNode>): GeneratedFile {
+
+  private generateKeyboards(
+    pages: Page[],
+    nodes: Record<string, ComponentNode>,
+  ): GeneratedFile {
     // Генерация клавиатур для каждой страницы
     const keyboards: string[] = [];
-    
+
     for (const page of pages) {
-      const pageNodes = Object.values(nodes).filter(n => n.pageId === page.id);
-      const keyboardNode = pageNodes.find(n => n.type === 'telegramKeyboard');
-      
+      const pageNodes = Object.values(nodes).filter(
+        (n) => n.pageId === page.id,
+      );
+      const keyboardNode = pageNodes.find((n) => n.type === 'telegramKeyboard');
+
       if (keyboardNode) {
-        const buttonNodes = pageNodes.filter(n => n.parentId === keyboardNode.id && n.type === 'telegramKeyboardButton');
-        
-        const buttons = buttonNodes.map(btn => ({
+        const buttonNodes = pageNodes.filter(
+          (n) =>
+            n.parentId === keyboardNode.id &&
+            n.type === 'telegramKeyboardButton',
+        );
+
+        const buttons = buttonNodes.map((btn) => ({
           text: btn.props.text as string,
           request_contact: btn.props.requestContact as boolean,
           request_location: btn.props.requestLocation as boolean,
         }));
-        
+
         keyboards.push(`
   '${page.id}': {
     keyboard: [
@@ -536,7 +609,7 @@ export class BotService {
   },`);
       }
     }
-    
+
     const content = `import { Markup } from 'telegraf';
 
 const keyboards = {${keyboards.join('\n')}
@@ -551,17 +624,21 @@ export function getKeyboard(pageId: string) {
     .oneTime(keyboard.one_time_keyboard);
 }
 `;
-    
+
     return { path: 'src/bot/keyboards/index.ts', content };
   }
-  
+
   private pascalCase(str: string): string {
-    return str.replace(/[-_]/g, ' ').replace(/(?:^|\\s)\\w/g, (match) => match.toUpperCase()).replace(/\\s/g, '');
+    return str
+      .replace(/[-_]/g, ' ')
+      .replace(/(?:^|\\s)\\w/g, (match) => match.toUpperCase())
+      .replace(/\\s/g, '');
   }
-  
+
   private kebabCase(str: string): string {
-    return str.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase().replace(/\\s+/g, '-');
+    return str
+      .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
+      .toLowerCase()
+      .replace(/\\s+/g, '-');
   }
 }
-
-

@@ -1,26 +1,26 @@
 'use client';
 
-import { motion } from 'motion/react';
-import { useState } from 'react';
-import { 
-  Search, 
-  Book, 
-  Code2, 
-  Zap, 
-  Shield, 
-  Database,
-  LayoutGrid,
+import {
   ArrowRight,
+  Book,
+  ChevronRight,
+  Code2,
+  Database,
   ExternalLink,
   FileText,
-  Video,
-  Terminal,
   Layers,
-  ChevronRight,
-  Star
+  LayoutGrid,
+  Search,
+  Shield,
+  Star,
+  Terminal,
+  Video,
+  Zap,
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { motion } from 'motion/react';
+import { useState } from 'react';
 import { ContentPageBackground } from '@/components/ui/backgrounds';
+import { cn } from '@/lib/utils';
 
 const categories = [
   {
@@ -29,9 +29,21 @@ const categories = [
     icon: Zap,
     color: '#84cc16',
     items: [
-      { title: 'Быстрый старт', desc: 'Создайте первое приложение за 5 минут', time: '5 мин' },
-      { title: 'Основы платформы', desc: 'Архитектура и ключевые концепции', time: '10 мин' },
-      { title: 'Шаблоны проектов', desc: 'Готовые решения для разных задач', time: '15 мин' },
+      {
+        title: 'Быстрый старт',
+        desc: 'Создайте первое приложение за 5 минут',
+        time: '5 мин',
+      },
+      {
+        title: 'Основы платформы',
+        desc: 'Архитектура и ключевые концепции',
+        time: '10 мин',
+      },
+      {
+        title: 'Шаблоны проектов',
+        desc: 'Готовые решения для разных задач',
+        time: '15 мин',
+      },
     ],
   },
   {
@@ -40,9 +52,21 @@ const categories = [
     icon: LayoutGrid,
     color: '#3b82f6',
     items: [
-      { title: 'Работа с компонентами', desc: 'Добавление и настройка UI элементов', time: '12 мин' },
-      { title: 'Адаптивный дизайн', desc: 'Создание mobile-friendly интерфейсов', time: '8 мин' },
-      { title: 'Темы и стили', desc: 'Кастомизация внешнего вида', time: '10 мин' },
+      {
+        title: 'Работа с компонентами',
+        desc: 'Добавление и настройка UI элементов',
+        time: '12 мин',
+      },
+      {
+        title: 'Адаптивный дизайн',
+        desc: 'Создание mobile-friendly интерфейсов',
+        time: '8 мин',
+      },
+      {
+        title: 'Темы и стили',
+        desc: 'Кастомизация внешнего вида',
+        time: '10 мин',
+      },
     ],
   },
   {
@@ -51,7 +75,11 @@ const categories = [
     icon: Database,
     color: '#8b5cf6',
     items: [
-      { title: 'Создание схемы', desc: 'Визуальный редактор структуры данных', time: '15 мин' },
+      {
+        title: 'Создание схемы',
+        desc: 'Визуальный редактор структуры данных',
+        time: '15 мин',
+      },
       { title: 'Relations', desc: 'Связи между таблицами', time: '12 мин' },
       { title: 'API Queries', desc: 'Запросы к данным', time: '20 мин' },
     ],
@@ -62,9 +90,17 @@ const categories = [
     icon: Zap,
     color: '#f59e0b',
     items: [
-      { title: 'Workflow Basics', desc: 'Создание первого workflow', time: '10 мин' },
+      {
+        title: 'Workflow Basics',
+        desc: 'Создание первого workflow',
+        time: '10 мин',
+      },
       { title: 'Триггеры', desc: 'Условия запуска процессов', time: '15 мин' },
-      { title: 'Интеграции', desc: 'Подключение внешних сервисов', time: '25 мин' },
+      {
+        title: 'Интеграции',
+        desc: 'Подключение внешних сервисов',
+        time: '25 мин',
+      },
     ],
   },
   {
@@ -73,9 +109,17 @@ const categories = [
     icon: Code2,
     color: '#ec4899',
     items: [
-      { title: 'REST API', desc: 'Полная документация endpoints', time: '30 мин' },
+      {
+        title: 'REST API',
+        desc: 'Полная документация endpoints',
+        time: '30 мин',
+      },
       { title: 'GraphQL', desc: 'Схема и примеры запросов', time: '25 мин' },
-      { title: 'Webhooks', desc: 'Настройка real-time событий', time: '15 мин' },
+      {
+        title: 'Webhooks',
+        desc: 'Настройка real-time событий',
+        time: '15 мин',
+      },
     ],
   },
   {
@@ -84,18 +128,26 @@ const categories = [
     icon: Shield,
     color: '#ef4444',
     items: [
-      { title: 'Аутентификация', desc: 'Настройка auth и прав доступа', time: '20 мин' },
+      {
+        title: 'Аутентификация',
+        desc: 'Настройка auth и прав доступа',
+        time: '20 мин',
+      },
       { title: 'RBAC', desc: 'Role-based access control', time: '18 мин' },
-      { title: 'Best Practices', desc: 'Рекомендации по безопасности', time: '15 мин' },
+      {
+        title: 'Best Practices',
+        desc: 'Рекомендации по безопасности',
+        time: '15 мин',
+      },
     ],
   },
 ];
 
-const quickLinks = [
-  { icon: FileText, label: 'Changelog', href: '#changelog' },
-  { icon: Video, label: 'Video Tutorials', href: '#videos' },
-  { icon: Terminal, label: 'CLI Reference', href: '#cli' },
-  { icon: Star, label: 'Examples', href: '#examples' },
+const quickLinks: { icon: React.ElementType; label: string; href: string }[] = [
+  // { icon: FileText, label: 'Changelog', href: '#' }, // TODO: Добавить страницу changelog
+  // { icon: Video, label: 'Video Tutorials', href: '#' }, // TODO: Добавить видео туториалы
+  // { icon: Terminal, label: 'CLI Reference', href: '#' }, // TODO: Добавить CLI документацию
+  // { icon: Star, label: 'Examples', href: '#' }, // TODO: Добавить примеры
 ];
 
 const popularGuides = [
@@ -129,15 +181,17 @@ export default function DocsPage() {
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-8"
             >
               <Book className="w-4 h-4 text-primary" />
-              <span className="text-sm font-medium text-white/80">Документация</span>
+              <span className="text-sm font-medium text-white/80">
+                Документация
+              </span>
             </motion.div>
 
             <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 tracking-tight">
               Как создать <span className="text-gradient">всё что угодно</span>
             </h1>
             <p className="text-xl text-white/50 max-w-2xl mx-auto mb-10">
-              Пошаговые руководства, API reference и примеры кода 
-              для создания приложений любой сложности.
+              Пошаговые руководства, API reference и примеры кода для создания
+              приложений любой сложности.
             </p>
 
             {/* Search */}
@@ -201,48 +255,55 @@ export default function DocsPage() {
                 {/* Header */}
                 <div className="p-6 border-b border-white/5">
                   <div className="flex items-center gap-4 mb-4">
-                    <div 
+                    <div
                       className="w-12 h-12 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
                       style={{ backgroundColor: `${category.color}15` }}
                     >
-                      <category.icon className="w-6 h-6" style={{ color: category.color }} />
+                      <category.icon
+                        className="w-6 h-6"
+                        style={{ color: category.color }}
+                      />
                     </div>
-                    <h3 className="text-lg font-bold text-white">{category.title}</h3>
+                    <h3 className="text-lg font-bold text-white">
+                      {category.title}
+                    </h3>
                   </div>
                 </div>
 
                 {/* Items */}
                 <div className="divide-y divide-white/5">
                   {category.items.map((item, i) => (
-                    <a
+                    <div
                       key={item.title}
-                      href="#"
-                      className="flex items-center justify-between p-4 hover:bg-white/5 transition-colors group/item"
+                      className="flex items-center justify-between p-4 hover:bg-white/5 transition-colors group/item cursor-pointer"
                     >
                       <div>
                         <h4 className="text-sm font-medium text-white/80 group-hover/item:text-white transition-colors">
                           {item.title}
                         </h4>
-                        <p className="text-xs text-white/40 mt-0.5">{item.desc}</p>
+                        <p className="text-xs text-white/40 mt-0.5">
+                          {item.desc}
+                        </p>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs text-white/30">{item.time}</span>
+                        <span className="text-xs text-white/30">
+                          {item.time}
+                        </span>
                         <ChevronRight className="w-4 h-4 text-white/20 group-hover/item:text-primary transition-colors" />
                       </div>
-                    </a>
+                    </div>
                   ))}
                 </div>
 
                 {/* Footer */}
                 <div className="p-4 border-t border-white/5">
-                  <a 
-                    href="#" 
-                    className="flex items-center justify-center gap-2 text-sm font-medium transition-colors"
+                  <span
+                    className="flex items-center justify-center gap-2 text-sm font-medium transition-colors opacity-50 cursor-not-allowed"
                     style={{ color: category.color }}
                   >
                     Все материалы
                     <ArrowRight className="w-4 h-4" />
-                  </a>
+                  </span>
                 </div>
               </motion.div>
             ))}
@@ -260,18 +321,19 @@ export default function DocsPage() {
             className="max-w-4xl mx-auto"
           >
             <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl font-bold text-white">Популярные гайды</h2>
-              <a href="#" className="text-sm text-primary hover:underline flex items-center gap-1">
+              <h2 className="text-2xl font-bold text-white">
+                Популярные гайды
+              </h2>
+              <span className="text-sm text-primary flex items-center gap-1 opacity-50 cursor-not-allowed">
                 Все гайды
                 <ArrowRight className="w-4 h-4" />
-              </a>
+              </span>
             </div>
 
             <div className="grid md:grid-cols-2 gap-4">
               {popularGuides.map((guide, index) => (
-                <motion.a
+                <motion.div
                   key={guide.title}
-                  href="#"
                   initial={{ opacity: 0, x: -20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
@@ -279,7 +341,9 @@ export default function DocsPage() {
                   className="flex items-center justify-between p-5 rounded-xl bg-white/[0.02] border border-white/5 hover:border-primary/30 hover:bg-white/[0.04] transition-all group"
                 >
                   <div>
-                    <span className="text-xs text-primary font-medium">{guide.category}</span>
+                    <span className="text-xs text-primary font-medium">
+                      {guide.category}
+                    </span>
                     <h3 className="text-white font-medium mt-1 group-hover:text-gradient transition-all">
                       {guide.title}
                     </h3>
@@ -288,7 +352,7 @@ export default function DocsPage() {
                     <Star className="w-4 h-4" />
                     {guide.views}
                   </div>
-                </motion.a>
+                </motion.div>
               ))}
             </div>
           </motion.div>
@@ -305,24 +369,21 @@ export default function DocsPage() {
             className="max-w-4xl mx-auto p-12 rounded-3xl border border-white/10 bg-gradient-to-br from-white/[0.05] to-transparent relative overflow-hidden"
           >
             <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent" />
-            
+
             <div className="relative z-10 grid md:grid-cols-2 gap-12 items-center">
               <div>
                 <h2 className="text-3xl font-bold text-white mb-4">
                   API Reference
                 </h2>
                 <p className="text-white/50 mb-8">
-                  Полная документация REST и GraphQL API. 
-                  Примеры кода на JavaScript, Python, Go и других языках.
+                  Полная документация REST и GraphQL API. Примеры кода на
+                  JavaScript, Python, Go и других языках.
                 </p>
-                <a 
-                  href="#"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-white font-medium hover:opacity-90 transition-opacity"
-                >
+                <span className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary/50 text-white font-medium opacity-50 cursor-not-allowed">
                   <Terminal className="w-5 h-5" />
                   Открыть API Docs
                   <ExternalLink className="w-4 h-4" />
-                </a>
+                </span>
               </div>
 
               {/* Code Preview */}
